@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Hour of Power</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="css/agency.css" rel="stylesheet">
+  <link href="css/frewall.css"
+
+  <!-- Custom Fonts -->
+  <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+  <link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body id="page-top" class="index">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand page-scroll" href="./#page-top">Hour of Power</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="hidden">
+            <a href="./#page-top"></a>
+          </li>
+          <li>
+            <a class="page-scroll" href="./#mostpopular">Most Popular</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="./#about">What Is This Thing?</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="./#team">Team</a>
+          </li>
+          <li>
+            <a class="page-scroll" href="./#contact">Contact</a>
+          </li>
+        </ul>
+        <div id="topsearch" class="col-sm-4 col-md-4">
+          <form class="navbar-form" role="search" action="results.html" method="GET" id="search_bar">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search" name="search_query" id="query">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <section id="playlist">
+		<div class="container">
+			<h2 class="section-heading" id="playlist-title"></h2>
+			<button id="play" class="btn btn-default">
+				<span class="glyphicon glyphicon-play"></span>Play
+			</button>
+			<table id="video-container">
+			</table>
+		</div>
+  </section>
+
+
+  </body>
+
+   <!-- jQuery -->
+  <script src="js/jquery.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
+  <script src="js/lodash.js"></script>
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="js/bootstrap.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+  <script src="js/classie.js"></script>
+  <script src="js/cbpAnimatedHeader.js"></script>
+
+  <!-- Contact Form JavaScript -->
+  <script src="js/jqBootstrapValidation.js"></script>
+
+  <!-- Custom Theme JavaScript -->
+  <script src="js/agency.js"></script>
+  <script src="js/freewall.js"></script>
+	
+  <script type="text/javascript">
+		// Variables to hold videoIds and the playlistId
+		var videoIds = [];
+		var playlistId = getQueryVariable("plist");
+		if(!playlistId) {
+			window.location.replace("index.php");
+		}
+		
+		function onClientLoad() {
+			gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
+			gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
+		}
+
+		function onYouTubeApiLoad() {
+			findPlaylistInDB(playlistId);
+					
+			$(document).ready(function(){
+				$("#play").click(function() {
+					window.location.assign("play.html");
+				});
+			});
+		}
+		
+		// If the playlist is in the database, pull from the db otherwise pull from youtube and add to the database
+		function findPlaylistInDB(plistId) {
+			$.ajax({
+				type: 'POST',
+				url: './php/findplaylist.php',
+				data: {playlistid: plistId},
+				success: function(data) { 
+					console.log(data); 
+					if(data) { 
+						console.log("db"); 
+						var tmp = data.split("<br>");
+						displayPlaylistInfo(tmp[0], tmp[1]);
+						requestPlaylistFromDB(plistId); 
+					} else { 
+						console.log("youtube"); 
+						requestPlaylistFromYoutube(plistId); 
+					} 
+				}
+			});
+		}
+					
+		function requestPlaylistFromDB(plistId) {
+			$.ajax({
+				type: 'POST',
+				url: './php/getplaylist.php',
+				data: {playlistid: plistId},
+				success: function(data) { parseResults(data, plistId); }
+			});
+		}
+		
+		function parseResults(data, plistId) {
+			var tmp = data.split("<br>");
+			tmp.pop();
+			
+			for(var i=0; i<tmp.length; i+=2) {
+				videoIds.push(tmp[i]);
+				displayResult(tmp[i+1], tmp[i]);
+			}
+			playlistLoaded();
+		}
+		
+		function displayPlaylistInfo(title, length) {
+			//$("#playlist-detail-container").append("<h1> " + title + "</h1><h2>" + length + " videos</h2>");
+			$("#playlist-title").append(title + " <small>" + length + " videos</small>");
+		}
+		
+		function displayResult(title, id) {
+			$("#video-container").append("<tr><td><img src='" + "http://img.youtube.com/vi/" + id + "/default.jpg" + "' alt='Thumbnail'></td><td class='text-primary'>" + title +"</td></tr>");
+		}
+		
+		function playlistLoaded() {
+			if(typeof(Storage) !== "undefined") {
+				sessionStorage.setItem('videoIds',JSON.stringify(shuffle(videoIds)));
+			}
+			$("#play").show();
+		}
+		
+		function shuffle(array) {
+			var currentIndex = array.length, temporaryValue, randomIndex ;
+
+			// While there remain elements to shuffle...
+			while (0 !== currentIndex) {
+
+				// Pick a remaining element...
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex -= 1;
+
+				// And swap it with the current element.
+				temporaryValue = array[currentIndex];
+				array[currentIndex] = array[randomIndex];
+				array[randomIndex] = temporaryValue;
+			}
+
+			return array;
+		}
+					
+		function requestPlaylistFromYoutube(playlistId, pageToken) {
+			// Only get the videoIds and the nextpage token
+			var requestOptions = {
+				playlistId: playlistId,
+				part: 'snippet',
+				fields: 'items/snippet/channelTitle,items/snippet/title,items/snippet/resourceId/videoId,nextPageToken',
+				maxResults: 50
+			};
+			
+			// If there is a pageToken, add it to the request options
+			if (pageToken) {
+				requestOptions.pageToken = pageToken;
+			}
+			
+			// Formulate and execute the api request
+			var request = gapi.client.youtube.playlistItems.list(requestOptions);
+			request.execute(function(response) {
+				var ids = [];
+				var titles = [];
+				
+				for(var i=0; i<response.items.length; ++i) {
+					if(response.items[i].snippet.title && response.items[i].snippet.title != 'Private video') {
+						var id = response.items[i].snippet.resourceId.videoId;
+						var title = response.items[i].snippet.title;
+						ids.push(id);
+						titles.push(title);
+						displayResult(response.items[i].snippet.title, id);
+					}	
+				}
+				
+				// Append the videoIds to the complete videoIds array
+				videoIds = videoIds.concat(ids);
+				
+				// Start getting metadata of the retrieved videoIds
+				storeMetadata(ids, titles, playlistId);
+				
+				nextPageToken = response.result.nextPageToken;
+				// If there is another page of results, retrieve it
+				if(nextPageToken) {
+					requestPlaylistFromYoutube(playlistId, nextPageToken);
+				}
+				// If all videoIds have been retrieved, then store them in session storage
+				else {
+					requestOptions = {
+						id: playlistId,
+						part: 'snippet',
+						//fields: 'items/snippet/channelTitle,items/snippet/title,items/snippet/resourceId/videoId,nextPageToken',
+					};
+					request = gapi.client.youtube.playlists.list(requestOptions);
+					request.execute(function(response) {
+						console.log(response);
+						displayPlaylistInfo(response.items[0].snippet.title, videoIds.length);
+						var q = Math.floor(videoIds.length/4);
+						storePlaylist(playlistId, response.items[0].snippet.title, videoIds[0], videoIds[q], videoIds[2*q], videoIds[3*q], videoIds.length); 
+						playlistLoaded();
+					});				
+				}
+			});
+		}
+		
+		function storePlaylist(plistId, t, v1, v2, v3, v4, len) {
+			$.ajax({
+				type: 'POST',
+				url: './php/storeplaylist.php',
+				data: {playlistid: plistId, title: t, vid1: v1, vid2: v2, vid3: v3, vid4: v4, length: len},
+				success: function(data) { console.log(data); },
+			});
+		}
+
+		// pass the videoIds and the playlistId to the "storemetadata.php" script
+		function storeMetadata(ids, titles, plistId) {
+			$.ajax({
+				type: 'POST',
+				url: './php/storemetadata.php',
+				data: {ids: ids, playlistid: plistId, metadata: titles},
+				success: function(data) { console.log(data); },
+			});
+		}
+		
+		function getQueryVariable(variable)
+		{
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i=0;i<vars.length;i++) {
+				var pair = vars[i].split("=");
+				if(pair[0] == variable){return pair[1];}
+			}
+			return(false);
+		}
+	</script>
+	<script src="https://apis.google.com/js/client.js?onload=onClientLoad"></script>
+</html>
