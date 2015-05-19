@@ -10,22 +10,8 @@
 	//	tasks outlined there
 	*******************************************************************************************/
 	
-	// Connects to the database and returns a connection object 
-	function sql_connect() {
-		$servername = "localhost";
-		$username = "powerhour";
-		$password = "UNhRVujrXDXywhxH";
-
-		// Create connection
-		$conn = new mysqli($servername, $username, $password);
-
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
-		}
-		mysqli_select_db($conn,"powerhour");
-		return $conn;
-	}
+		// Load sql_connect function 
+	require('connecttodb.php');
 	
 	// Make sure that the videoIds and playlistId were sent
 	if($_POST['playlistid']) {	

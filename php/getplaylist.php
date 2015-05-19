@@ -1,36 +1,16 @@
 <?php
 	/******************************************************************************************
-	//	"server.php"
-	//	This page gets an array of videoIds and a playlistId through post. The page then scrapes
-	//	the youtube pages corresponding to each id in order to find the metadata. The page then
-	//	inserts	the values into the database.
+	//	"getplaylist.php"
+	//	This page pulls the videos in a playlist from the database
 	//
 	//	TODO
 	//	-See "index.php" comments as this will have to be changed in order to complete the TODO
 	//	tasks outlined there
 	*******************************************************************************************/
 
-
-	// Because this script is querying up to 50 pages from youtube, it can take awhile to complete.
-	// Therefore the timeout should be increased.
-	set_time_limit(60);
 	
-	// Connects to the database and returns a connection object 
-	function sql_connect() {
-		$servername = "localhost";
-		$username = "powerhour";
-		$password = "UNhRVujrXDXywhxH";
-
-		// Create connection
-		$conn = new mysqli($servername, $username, $password);
-
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
-		} 
-		mysqli_select_db($conn,"powerhour");
-		return $conn;
-	}
+	// Load sql_connect function 
+	require('connecttodb.php');
 	
 	// Make sure that the videoIds and playlistId were sent
 	if($_POST['playlistid']) {	
