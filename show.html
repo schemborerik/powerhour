@@ -156,34 +156,18 @@ Functionality:
 
 <script type="text/javascript">
 
-var videoIds=[];
-var metadata;
 var myPlaylist;
 var itemsPerPage = 20;
 var pageNum = 1;
 
 
 $(document).ready(function(){
-	//videoIds = JSON.parse(sessionStorage.getItem('videoIds'));
-
-
 
 	if(JSON.parse(sessionStorage.getItem("myPlaylist")))
 	{
 		console.log("retrieving myPlaylist");
 		myPlaylist = JSON.parse(sessionStorage.getItem("myPlaylist"));
 		console.log(myPlaylist.length + " items found");
-		// if(myPlaylist.length > 0)
-		// {
-		// 	for(var j = 0; j<myPlaylist.length; j++)
-		// 	{
-		// 		videoIds.push(myPlaylist[j].vidid);
-		// 	}
-		// }
-		// else
-		// {
-		// 	console.log("didn't find myPlaylist");
-		// }
 	}
 	else
 	{
@@ -198,16 +182,16 @@ $(document).ready(function(){
 		document.getElementById('shuffle').disabled = true;
 	}
 
-	$("#go").click(function() {
+	$("#play").click(function() {
 		if(myPlaylist.length < 60){
-			callToast(videoIds.length);
+			callToast(myPlaylist.length);
 		} else{
 			window.location.assign("play.html");
 		}
 	});
 
 	$("#removeAllVids").click(function(){
-		videoIds = [];
+		myPlaylist = [];
 		document.getElementById('numVideos').innerHTML =  "0 videos";
 		sessionStorage.setItem('myPlaylist', JSON.stringify([]));
 		document.getElementById("playlistVideos").innerHTML = "";
@@ -216,25 +200,20 @@ $(document).ready(function(){
 	});
 
 	$("#shuffle").click(function(){
-		var newPlaylistOrder = [];
-		var vidList = document.getElementById("playlistVideos");
-		if(vidList.children.length > 1){
-			for (var i = vidList.children.length; i >= 0; i--) 
-			{
-				var video = vidList.children[Math.random() * i | 0];
-				vidList.appendChild(video);
-				var vidid = video.getAttribute("vidid");
-				var metadata = video.childNodes[1].innerHTML;
-				console.log(metadata);
-				console.log(vidid);
-			}
+		myPlaylist = shuffle(myPlaylist);
+		document.getElementById("playlistVideos").innerHTML = "";
+		for(var i = 1; i<pageNum+1; i++)
+		{
+			displayPage(i);
 		}
+		sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
 	});
 
 	$(window).scroll(function() {
 	    if($(window).scrollTop() == $(document).height() - $(window).height()) 
 	    {
-	    	displayPage(pageNum++);      
+	    	pageNum += 1;
+	    	displayPage(pageNum);      
 	    }
 	});
 
@@ -244,7 +223,7 @@ $(document).ready(function(){
 
 function autoAdd(){
 	console.log("autoAdd called");
-	var need = 60 - videoIds.length;
+	var need = 60 - myPlaylist.length;
 	var plid = "PL8A83124F1D79BD4F";
 	$.ajax({
 		type: 'POST',
@@ -259,16 +238,13 @@ function autoAdd(){
 function parseAutoResults(data, need){
 	var tmp = data.split("<br>");
 	tmp.pop();
-	var storedIds = JSON.parse(sessionStorage.getItem('videoIds'));
-	console.log("real need: " + need);
 	need *= 2;
-	console.log("Program need: " + need);
-	for(var i=0; i<need; i+=2) {
-		storedIds.push(tmp[i]);
+	for(var i=0; i<need; i+=2) 
+	{
+		console.log(tmp[i+1]);
+		myPlaylist.push({vidid:tmp[1] , metaData: tmp[i+1]});
 	}
-	console.log("new number of videos: " + storedIds.length);
-	sessionStorage.setItem('videoIds', JSON.stringify(storedIds));
-	window.location.assign('play.html');
+	sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
 }
 
 
@@ -298,27 +274,6 @@ function callToast(numVids){
 	}
 
 	Command: toastr["info"](msg, "Hey! You need more videos!")
-}
-
-function fade(el){
-	var vId = $(el).attr('id');
-	var child = $(el).children()[0];
-	var initClass = child.className;
-	//console.log(initClass);
-	//console.log("length on click: "+videoIds.length);
-	var vidIds = JSON.parse(sessionStorage.getItem('videoIds'));
-	if (initClass == "PLtransbox"){
-		var ind = videoIds.indexOf(vId);
-		vidIds.splice(ind,1);
-		console.log("one removed: "+ videoIds.length);
-		child.className = "PLtransbox-discard";
-	}else {
-		vidIds.push(vId);
-		console.log("one added: " + videoIds.length);
-		child.className = "PLtransbox";
-	}
-	document.getElementById('numVideos').innerHTML = vidIds.length + " Videos";
-	sessionStorage.setItem('videoIds', JSON.stringify(vidIds));
 }
 
 function displayResult(id, title)
@@ -418,16 +373,20 @@ function displayPage(pNum)
 {
 	var start = itemsPerPage*(pNum - 1);
 	var stop = start+itemsPerPage;
-	if(myPlaylist.length > stop)
+	console.log("pnum " + pNum);
+	console.log(start + ", " + stop);
+
+	if(myPlaylist.length >= stop)
 	{
+		console.log("if");
 		for(var i = start; i<stop; i++)
 		{
-			console.log(i);
 			displayResult(myPlaylist[i].vidid, myPlaylist[i].metaData);
 		}
 	}
 	else if(myPlaylist.length > start && myPlaylist.length < stop)
 	{
+		console.log("else if");
 		for(var i = start; i<myPlaylist.length; i++)
 		{
 			console.log(i);

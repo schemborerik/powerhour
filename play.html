@@ -144,32 +144,37 @@
 
 <script type="text/javascript">
 		// Once the document is fully loaded, load the iframe API asynchronously
-		var metaMap = new Map();
-		var thumbList;
+		//var metaMap = new Map();
+		//var thumbList;
 		var thumbCount = 0;
+		var myPlaylist;
+		var videoIds = [];
 
 		$(document).ready(function(){
 			var tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			videoIds = JSON.parse(sessionStorage.getItem('videoIds'));
-			thumbList = new Array(videoIds.length); 
-			for(var k = 0; k<videoIds.length; k++){
-				getMetaData(videoIds[k]);
+			// videoIds = JSON.parse(sessionStorage.getItem('videoIds'));
+			myPlaylist = JSON.parse(sessionStorage.getItem("myPlaylist"));
+			// for(var k = 0; k<videoIds.length; k++){
+			// 	getMetaData(videoIds[k]);
+			// }
+			for(var k = 0; k<myPlaylist.length; k++)
+			{
+				displayThumbs(myPlaylist[k].vidid, myPlaylist[k].metaData);
+				videoIds.push(myPlaylist[k].vidid);
 			}
 		});
 		
 		// Get the videoIds from the session variable
-		var videoIds;
+		//var videoIds;
 		
 		// Variable to hold the playerHandler instance
 		var pHandler;
 		
 		var default_width = 854;
 		var default_height = 512;
-
-
 
 		function displayThumbs(vid, data)
 		{
@@ -178,18 +183,29 @@
 			var thumb = "<li video_id=" +vid + "><div id = 'thumb' style='background: url("+thumbnail_url+");'><div class = 'transbox'>";
 			thumb += "<marquee behavior='scroll' direction='left' vspace='30px' id='songInfo'>"+data+"</marquee>"
 			thumb += "</div></div></li>";
-			//console.log("Index of vid: " + videoIds.indexOf(vid));
-			thumbList[videoIds.indexOf(vid)] = thumb;
-			//console.log("metamap: " + metaMap.size + " videoIds: " + videoIds.length + " thumbList: " + thumbList.length);
-			if(thumbCount == videoIds.length)
-			{
-				console.log("adding thumbs");
-				for(var i = 0; i<videoIds.length; i++)
-				{
-					$("#upnext").append(thumbList[i]);
-				}
-			}
+			
+			$("#upnext").append(thumb);
 		}
+
+		// function displayThumbs(vid, data)
+		// {
+		// 	//var data = metaMap.get(vid);
+		// 	var thumbnail_url = "http://img.youtube.com/vi/" + vid + "/default.jpg";
+		// 	var thumb = "<li video_id=" +vid + "><div id = 'thumb' style='background: url("+thumbnail_url+");'><div class = 'transbox'>";
+		// 	thumb += "<marquee behavior='scroll' direction='left' vspace='30px' id='songInfo'>"+data+"</marquee>"
+		// 	thumb += "</div></div></li>";
+		// 	//console.log("Index of vid: " + videoIds.indexOf(vid));
+		// 	thumbList[videoIds.indexOf(vid)] = thumb;
+		// 	//console.log("metamap: " + metaMap.size + " videoIds: " + videoIds.length + " thumbList: " + thumbList.length);
+		// 	if(thumbCount == videoIds.length)
+		// 	{
+		// 		console.log("adding thumbs");
+		// 		for(var i = 0; i<videoIds.length; i++)
+		// 		{
+		// 			$("#upnext").append(thumbList[i]);
+		// 		}
+		// 	}
+		// }
 
 		function getMetaData(vId){
 			$.ajax({
