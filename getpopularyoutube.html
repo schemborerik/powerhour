@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+var query = "vevo most popular";
+var masterList =[];
+
+function onQuery() {
+    console.log("switched");
+    console.log(query);
+    runsearch();
+}
+
+function runsearch() {
+    console.log("got to search");
+    var request = gapi.client.youtube.search.list({
+        part: 'snippet',
+        q:query,
+        maxResults:6,
+        type:"playlist",
+    });
+
+    request.execute(onSearchResponse);
+}
+
+function onSearchResponse(response) {
+    for(i=0; i<6; ++i){
+        var playlistTitle = response.items[i].snippet.title;
+        var playlistId = response.items[i].id.playlistId;
+        //var thumbnail_url = response.items[i].snippet.thumbnails.default.url;
+        //requestVideoPlaylist(playlistId, playlistTitle);
+        var newList = [];
+        newList.push(playlistId);
+        newList.push(playlistTitle);
+        var requestOptions = {
+            playlistId: playlistId,
+            part: 'snippet',
+            maxResults: 4
+        };
+
+        var request = gapi.client.youtube.playlistItems.list(requestOptions);
+        request.execute(function(response) {
+            for(var i=0; i<4; ++i) {
+                var videoId = response.items[i].snippet.resourceId.videoId;
+                var thumb_url = "http://img.youtube.com/vi/" + videoId + "/default.jpg"
+                //console.log(thumb_url);
+                ind = i+2;
+                newList.push(thumb_url);
+            }
+            masterList.push(newList);
+        });
+    }
+    $.ajax({
+        type: "POST",
+        url: './php/storemostpopular.php',
+        data: {popularlist: masterList},
+        success: function(data){
+            console.log(data);
+        }
+    });
+}
+
+</script>
+<script src="https://apis.google.com/js/client.js?onload=onClientLoad"></script>
+</head>
+<html>

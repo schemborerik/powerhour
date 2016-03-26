@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Hour of Power</title>
+
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link href="css/agency.css" rel="stylesheet">
+	<link href="css/frewall.css"
+
+	<!-- Custom Fonts -->
+	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+	
+	<link rel="stylesheet" type="text/css" href="test.css">
+
+</head>
+
+<body id="page-top" class="index">
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-fixed-top navbar-shrink">
+		<div class="container">
+
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header page-scroll">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand page-scroll" href="./#page-top">Hour of Power</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="hidden">
+						<a href="./#page-top"></a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./#mostpopular">Most Popular</a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./#about">About</a>
+					</li>
+				<!-- 	<li>
+						<a class="page-scroll" href="./#team">Team</a>
+					</li> -->
+					<li>
+						<a class="page-scroll" href="./#contact">Contact</a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./show.html">My List</a>
+					</li>
+				</ul>
+				<div class="col-sm-4 col-md-4">
+					<form class="navbar-form" role="search" action="results.html" method="GET" id="search_bar">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Search" name="search_query" id="query">
+							<div class="input-group-btn">
+								<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container-fluid -->
+	</nav>
+
+	<section id="player">
+		<div class="container">
+			<button id="fullscreen" class="btn btn-default" style="float:right">
+				<span class="glyphicon glyphicon-fullscreen"></span>
+			</button>
+			<button id="centuryclub" class="btn btn-default" style="display: none;">CENTURY CLUB</button>
+			<h2 class = "section-heading" id="counter"></h2>
+			
+			<div id="fullscreen-element">
+				<div class="av-content">
+
+					<div id="playercontainer">
+						<div id="player1"></div>
+						<div id="player2"></div>
+					</div>
+					<p id="metadata" style="color:#FF358B"></p>
+				</div>
+				<div id="loading" class="triangles">
+					<div class="tri invert"></div>
+					<div class="tri invert"></div>
+					<div class="tri"></div>
+					<div class="tri invert"></div>
+					<div class="tri invert"></div>
+					<div class="tri"></div>
+					<div class="tri invert"></div>
+					<div class="tri"></div>
+					<div class="tri invert"></div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class = 'wrap' height=120px>
+				<ul id = "upnext">
+				</ul>
+			</div>
+		</div>
+	</section>
+</body>
+
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/lodash.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+
+
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="js/agency.js"></script>
+<script src="js/freewall.js"></script>
+
+<script type="text/javascript">
+		// Once the document is fully loaded, load the iframe API asynchronously
+		var metaMap = new Map();
+		var thumbList;
+		var thumbCount = 0;
+
+		$(document).ready(function(){
+			var tag = document.createElement('script');
+			tag.src = "https://www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			videoIds = JSON.parse(sessionStorage.getItem('videoIds'));
+			thumbList = new Array(videoIds.length); 
+			for(var k = 0; k<videoIds.length; k++){
+				getMetaData(videoIds[k]);
+			}
+		});
+		
+		// Get the videoIds from the session variable
+		var videoIds;
+		
+		// Variable to hold the playerHandler instance
+		var pHandler;
+		
+		var default_width = 854;
+		var default_height = 512;
+
+
+
+		function displayThumbs(vid, data)
+		{
+			//var data = metaMap.get(vid);
+			var thumbnail_url = "http://img.youtube.com/vi/" + vid + "/default.jpg";
+			var thumb = "<li video_id=" +vid + "><div id = 'thumb' style='background: url("+thumbnail_url+");'><div class = 'transbox'>";
+			thumb += "<marquee behavior='scroll' direction='left' vspace='30px' id='songInfo'>"+data+"</marquee>"
+			thumb += "</div></div></li>";
+			//console.log("Index of vid: " + videoIds.indexOf(vid));
+			thumbList[videoIds.indexOf(vid)] = thumb;
+			//console.log("metamap: " + metaMap.size + " videoIds: " + videoIds.length + " thumbList: " + thumbList.length);
+			if(thumbCount == videoIds.length)
+			{
+				console.log("adding thumbs");
+				for(var i = 0; i<videoIds.length; i++)
+				{
+					$("#upnext").append(thumbList[i]);
+				}
+			}
+		}
+
+		function getMetaData(vId){
+			$.ajax({
+			type: 'GET',
+			url: './php/getmetadata.php',
+			data: { id: vId},
+			success: function(data) {
+				//console.log(data);
+				thumbCount++;
+				//metaMap.set(vId, data);
+				displayThumbs(vId, data); 
+				},
+			error: function()
+			{
+				alert("error");
+				console.log("Error retrieving " + vId);
+			}
+			});
+
+		}
+
+		function advanceUpnextSelection(vidIndex)
+		{
+			var children = $("#upnext").children();
+			var current_e = children[vidIndex];
+			var chilOfCur = $(current_e).children();
+			var selected = chilOfCur[0];
+			$(selected).addClass('playing');
+			if(vidIndex != 0){
+				var lastInd = vidIndex - 1;
+				var last_e = children[lastInd];
+				var chilOfLast = $(last_e).children();
+				var unselected = chilOfLast[0];
+				$(unselected).removeClass();
+			}
+		}
+		
+		// Called after youtube iframe api is loaded and creates the youtube players
+		function onYouTubeIframeAPIReady() {
+			// Initialize the youtube iframe players
+			// for(var k = 0; k<videoIds.length; k++){
+			// 	var thumbnail_url = "http://img.youtube.com/vi/" + videoIds[k] + "/default.jpg";
+			// 	var thumb = "<p><img src = " + thumbnail_url + "></p>";
+			// 	$("#upnext").append(thumb);
+			// }
+
+			var player1 = new YT.Player('player1', {
+				height: default_height + "px",
+				width: default_width + "px",
+				events: {
+					'onReady': onPlayerReady,
+					'onStateChange': onPlayerStateChange,
+					'onError': onError
+				},          
+				playerVars: { 
+					'controls': 0,
+					'fs': 0,
+					'showinfo': 0,
+					'iv_load_policy': 3,
+					'modestbranding': 1,
+					'disablekb': 1
+				}
+			});  
+			var player2 = new YT.Player('player2', {
+				height: default_height + "px",
+				width: default_width + "px",
+				events: {
+					'onReady': onPlayerReady,
+					'onStateChange': onPlayerStateChange,
+					'onError': onError
+				},
+				playerVars: { 
+					'controls': 0,
+					'fs': 0,
+					'showinfo': 0,
+					'iv_load_policy': 3,
+					'modestbranding':1,
+					'disablekb': 1
+				}          
+			});
+			
+			// Hide both players to begin
+			$(player1.getIframe()).hide();
+			$(player2.getIframe()).hide();
+			
+			// Create a new playerHandler from the players and the videoIds
+			pHandler = new playerHandler(player1, player2, videoIds);
+		}
+
+		// Variable used to determine when both players are ready as this function will be called once for each player
+		var allPlayersLoaded = false;
+		
+		// Called after a youtube player is loaded and ready
+		function onPlayerReady(event) {      
+			// Initialize players volume to 0
+			event.target.setVolume(0);
+			
+			// Ensure that both players are ready
+			if(allPlayersLoaded) {        
+				// Listen for the begin button to start the power hour
+				pHandler.init();
+				
+				$("#begin").click(function() {
+					pHandler.init();
+					$("#begin").hide();
+				});
+				
+				// Listen for fullscreen button in order to enter fullscreen
+				$("#fullscreen").click(function() {
+					if(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+						exitFullscreen();
+					} else {
+						launchIntoFullscreen(document.getElementById("fullscreen-element"));  
+					}
+				});
+				
+				$("#centuryclub").click(function() {
+					pHandler.century();
+					$("#centuryclub").hide();
+				});
+			}
+			
+			// After first player is loaded, set this variable true so that when the second player is loaded, the program will start
+			allPlayersLoaded = true;
+		}
+
+		// Called when one of the player's state changes
+		function onPlayerStateChange(event) {        
+			// If a play event, pass the event target to the playerHandler
+			if(event.data == YT.PlayerState.PLAYING) {
+				pHandler.playEvent(event.target);
+			}
+			// If a pause event, pass the event target to the playerHandler
+			if(event.data == YT.PlayerState.PAUSED) {
+				pHandler.pauseEvent(event.target);
+			}
+		}
+		
+		function onError(event) {
+			console.log("error");
+			pHandler.errorEvent(event.target);
+		}
+		</script>
+		<script type="text/javascript">
+		// Handles the loading and switching of videos
+		function playerHandler(player1, player2, videoIds) {
+			// Keep track of which player is active and which is in the background 
+			this.activePlayer = player2;
+			this.backgroundPlayer = player1;
+			
+			// Store the videoIds internally
+			this.videoIds = videoIds;
+			
+			// Will contain the indices of loaded videos
+			this.playQueue = [];
+			
+			this.playCounter;
+			
+			// Indicates the index of the next video to load
+			this.loadIndex = 0;
+			
+			// Variable indicating whether the activePlayer is paused
+			this.paused = false;
+			
+			// Will hold the metadata for the loaded video
+			this.metadata;
+			
+			// Will hold the pauseableInterval/pauseableTimeout of the function currently in waiting
+			this.process;
+			
+			// Holds the times for the fade between videos and the playing time of each video
+			this.fadeTime = 1000;
+			this.playTime = 60000;  
+			
+			// Indicate whether this is the functions first run so that a video can be loaded before played
+			this.firstRun;
+			
+			// Initializes variables and the youtube players
+			this.init = function() {
+				this.firstRun = true;
+				
+				this.loadIndex = 0;
+				this.playQueue = [];
+				this.playCounter = 60;
+				
+				// Variable indicating whether the activePlayer is paused
+				this.paused = false;
+				
+				// Initially both players should be hidden
+				//$(this.activePlayer.getIframe()).hide();
+				//$(this.backgroundPlayer.getIframe()).hide();
+				
+				// Start both players at 0 volume
+				this.activePlayer.setVolume(0);
+				this.backgroundPlayer.setVolume(0);
+				
+				// Load video in player1 (the "background player")
+				this.load();
+			}
+			
+			// Starts a video on the backgroundPlayer so that it will begin loading and get the metadata of the video from the database
+			this.load = function () {        
+				// Load the video which will trigger play event after done loading
+				this.backgroundPlayer.loadVideoById(videoIds[this.loadIndex], 60, "highres");
+				
+				// Set the video's quality
+				this.backgroundPlayer.setPlaybackQuality("hd720");  
+				
+				// Add the loadIndex to the playQueue
+				this.playQueue.push(this.loadIndex);
+				
+				// Load metadata through ajax call to the database
+				$.ajax({
+					type: 'GET',
+					url: './php/getmetadata.php',
+					data: { id: videoIds[this.loadIndex]},
+					success: function(data) { 
+						//console.log(data);
+						this.metadata = data;
+					}.bind(this),
+				});
+				
+				// Indicate the index of the next video to load
+				this.loadIndex++
+			}
+			
+			// Handles the fading out of the currently active player
+			this.fadeOut = function() {
+				var volume = 100;
+				// Assign the PauseableInterval to process so that if the user pauses the player during a fadeout, the player will be able to resume
+				this.process = new PauseableInterval(function() { if(volume < 0) { this.process.clearInterval(); this.switch(); } else{ this.activePlayer.setVolume(volume); volume-=10; }}.bind(this), this.fadeTime/10);
+			}
+			
+			// Handle the switching between the videos and begin the loading of the next video 
+			this.switch = function() {
+				// If there is another video to play, switch the background and active players
+				if(this.playQueue.length > 0 && this.playCounter > 1) {
+					// Switch the activePlayers
+					var tmp = this.backgroundPlayer;
+					this.backgroundPlayer = this.activePlayer;
+					this.activePlayer = tmp;
+					
+					// Remove loaded video from playQueue
+					this.playQueue.shift();
+					
+					var vidCount = 61 - this.playCounter;
+					$("#counter").text("Video: " + vidCount);
+					var vidIndex = vidCount-1;
+					//console.log("video index: " + vidIndex);
+
+					advanceUpnextSelection(vidIndex);
+
+					// var children = $("#upnext").children();
+					// var current_e = children[vidIndex];
+					// var chilOfCur = $(current_e).children();
+					// var selected = chilOfCur[0];
+					// $(selected).addClass('playing');
+					// if(vidIndex != 0){
+					// 	var lastInd = vidIndex - 1;
+					// 	var last_e = children[lastInd];
+					// 	var chilOfLast = $(last_e).children();
+					// 	var unselected = chilOfLast[0];
+					// 	$(unselected).removeClass();
+					//}
+
+					this.playCounter--;
+					
+					// Play the loaded video
+					this.activePlayer.playVideo();
+					
+					// Set the song and artist headers with the metadata of the loaded video
+					$("#metadata").text(this.metadata);
+					$("#metadata").show();
+					//console.log("going");
+					window.setTimeout(function() {$("#metadata").fadeOut(1500) }, 5000);
+					
+					// If more videos to load, load it
+					if(this.loadIndex < this.videoIds.length)
+						this.load();
+
+					// Begin the fade in of the new video
+					this.fadeIn();
+				} 
+				// If there are no other videos to play, stop the currently playing video and run the end code
+				else {    
+					// Stop the videos
+					this.activePlayer.stopVideo();
+					this.backgroundPlayer.stopVideo();
+					$("#metadata").text("END");
+					$("#centuryclub").show();
+				}  
+			}
+			
+			// Handles the fading in of the currently active player
+			this.fadeIn = function() {
+				var volume = 0;
+				// Assign the PauseableInterval to process so that if the user pauses the player during a fadein, the player will be able to resume
+				this.process = new PauseableInterval(function() { if(volume > 100) { this.process.clearInterval(); this.waitForSwitch(); } else{ this.activePlayer.setVolume(volume); volume+=10; }}.bind(this), this.fadeTime/10);
+			}
+			
+			// Handles the wait between video switches
+			this.waitForSwitch = function() {
+				// Assign the PauseableTimeout to process so that if the user pauses the player between video switches, the player will be able to resume
+				this.process = new PauseableTimeout(function() { this.process.clearTimeout(); this.fadeOut(); }.bind(this), this.playTime);
+			}
+			
+			// Handles a play event triggered by a youtube player
+			this.playEvent = function (eventTarget) {
+				// If the play event is on the active player, ensure that the active player is not hidden and resume any paused process
+				if(this.activePlayer == eventTarget) {
+					// If the video has been paused by the user, resume it
+					if(this.paused) {
+						this.process.resume();
+						this.paused = false;
+					} 
+					// Otherwise this is a new video playing and the activePlayer needs to be shown and the background player hidden
+					else {
+						$(this.backgroundPlayer.getIframe()).hide();
+						$(this.activePlayer.getIframe()).show();
+					}
+				} 
+				// If the play event is on the background player, the video needs to be set to the correct location and should be paused
+				else if(this.backgroundPlayer == eventTarget) {
+					// Set the player to the middle
+					var duration = this.backgroundPlayer.getDuration(); 
+					if(duration/2 < 60) {
+						this.backgroundPlayer.seekTo(0);
+					} else if(duration > 0) {  
+						this.backgroundPlayer.seekTo(duration/2); 
+					}
+					
+					// Video done loading, pause the video which will trigger pause event
+					this.backgroundPlayer.pauseVideo()
+				}
+			}
+			
+			// Handles a pause event triggered by a youtube player
+			this.pauseEvent = function (eventTarget) {
+				// If the pause event is on the active player, then pause the currently running process and indicate that the activePlayer is paused
+				if(this.activePlayer == eventTarget) {
+					this.paused = true;
+					this.process.pause();
+				} 
+				// If the pause event is on the background player, then this just indicates that the video has finished loading and nothing needs to be done
+				else if(this.backgroundPlayer == eventTarget) {            
+					// If this is the first run however, then switch the video so that the loaded video is active
+					if(this.firstRun) {
+						this.firstRun = false;
+						$("#loading").hide();
+						this.switch();
+					}
+				}
+			}
+			
+			this.errorEvent = function (eventTarget) {
+				console.log("error");
+				if(this.backgroundPlayer == eventTarget) {
+					if(this.loadIndex < this.videoIds.length)
+						this.load();
+				}
+			}
+			
+			this.fullscreen = function() {
+				this.activePlayer.setSize($(window).width(), $(window).height());
+				this.backgroundPlayer.setSize($(window).width(), $(window).height());
+				$("#metadata").css("font-size", 28*$(window).width()/default_width + "px");
+				$("#metadata").css("left", 50*$(window).width()/default_width + "px")
+				$("#metadata").css("bottom", 80*$(window).height()/default_height + "px")
+			}
+			
+			this.exitFullscreen = function() {
+				this.activePlayer.setSize(default_width + "px", default_height + "px");
+				this.backgroundPlayer.setSize(default_width + "px", default_height + "px");
+				$("#metadata").css("font-size", 28 + "px");
+				$("#metadata").css("left", 50 + "px")
+				$("#metadata").css("bottom", 80 + "px")
+			}
+			
+			this.century = function() {
+				this.playCounter = 40;
+				this.switch();
+			}
+		}
+		</script>
+		<script type="text/javascript">
+		// Set element to fullscreen
+		function launchIntoFullscreen(element) {
+			if(element.requestFullscreen) {
+				element.requestFullscreen();
+			} else if(element.mozRequestFullScreen) {
+				element.mozRequestFullScreen();
+			} else if(element.webkitRequestFullscreen) {
+				element.webkitRequestFullscreen();
+			} else if(element.msRequestFullscreen) {
+				element.msRequestFullscreen();
+			}
+		}
+
+		// Exit full screen (will trigger a fullscreenchange event)
+		function exitFullscreen() {
+			if(document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if(document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if(document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			}
+		}
+		
+		// This function listens for a fullscreenchange event and alters the player size accordingly
+		var exitHandler = function(){                                           
+			if(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+				// If going fullscreen, set the player sizes to the width and height of the window
+				pHandler.fullscreen();
+				//$("#content-container").removeClass("defaultsize");
+				//$("#content-container").addClass("fullscreen");
+			} else {
+				// If exiting fullscreen, set the player sizes to a smaller width and height
+				pHandler.exitFullscreen();
+				//$("#content-container").removeClass("fullscreen");
+				//$("#content-container").addClass("defaultsize");			
+			}
+		}                                                                         
+		if (document.addEventListener)
+		{
+			document.addEventListener('webkitfullscreenchange', exitHandler, false);
+			document.addEventListener('mozfullscreenchange', exitHandler, false);
+			document.addEventListener('fullscreenchange', exitHandler, false);
+			document.addEventListener('MSFullscreenChange', exitHandler, false);
+		}
+
+		</script>
+		<script type="text/javascript">
+		// Wrapper for the timeout function that allows a timeout to be paused and resumed
+		function PauseableTimeout(func, delay){
+			this.func = func;
+
+			var _now = new Date().getTime();
+			this.triggerTime = _now + delay;
+
+			this.t = window.setTimeout(this.func,delay);
+
+			this.paused_timeLeft = 0;
+
+			this.getTimeLeft = function(){
+				var now = new Date();
+
+				return this.triggerTime - now;
+			}
+
+			this.pause = function(){
+				this.paused_timeLeft = this.getTimeLeft();
+
+				window.clearTimeout(this.t);
+				this.t = null;
+			}
+
+			this.resume = function(){
+				if (this.t == null){
+					this.t = window.setTimeout(this.func, this.paused_timeLeft);
+				}
+			}
+
+			this.clearTimeout = function(){ window.clearTimeout(this.t);}
+		}
+		
+		// Wrapper for the interval function that allows a interval to be paused and resumed
+		function PauseableInterval(func, delay){
+			this.func = func;
+			this.delay = delay;
+
+			this.triggerSetAt = new Date().getTime();
+			this.triggerTime = this.triggerSetAt + this.delay;
+
+			this.i = window.setInterval(this.func, this.delay);
+
+			this.t_restart = null;
+
+			this.paused_timeLeft = 0;
+
+			this.getTimeLeft = function(){
+				var now = new Date();
+				return this.delay - ((now - this.triggerSetAt) % this.delay);
+			}
+
+			this.pause = function(){
+				this.paused_timeLeft = this.getTimeLeft();
+				window.clearInterval(this.i);
+				this.i = null;
+			}
+
+			this.restart = function(sender){
+				sender.i = window.setInterval(sender.func, sender.delay);
+			}
+
+			this.resume = function(){
+				if (this.i == null){
+					this.i = window.setTimeout(this.restart, this.paused_timeLeft, this);
+				}
+			}
+
+			this.clearInterval = function(){ window.clearInterval(this.i);}
+		}
+		</script>
+
+
+
+		</html>
