@@ -238,7 +238,7 @@ include("./php/setpopularyoutube.php");
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12 text-center">
-					<h2 class="section-heading">My name is Kyle and I'm a Diddler</h2>
+					<h2 class="section-heading">I'm Erik and I spend too much time on r/videos </h2>
 					<h3 class="section-subheading text-muted">This is an app used to create your own custom power hour playlist. You pick the songs, we'll handle the rest.</h3>
 					<h3 class="section-subheading text-muted">Every time the song changes, take a shot of beer. It's that simple.</h3>
           <h3 class="section-subheading text-muted">This application was made to fill 

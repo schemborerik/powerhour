@@ -206,7 +206,7 @@ setTimeout(function(){
 		sessionStorage.setItem('myPlaylist', JSON.stringify([]));
 		document.getElementById("playlistVideos").innerHTML = "";
 
-		document.getElementById('go').disabled = true;
+		document.getElementById('play').disabled = true;
 	});
 
 	$("#shuffle").click(function(){
@@ -231,19 +231,31 @@ setTimeout(function(){
 });
 
 
-function autoAdd(){
-	console.log("autoAdd called");
-	var need = 60 - myPlaylist.length;
-	var plid = "PL8A83124F1D79BD4F";
-	$.ajax({
-		type: 'POST',
-		url: './php/getplaylist.php',
-		data: {playlistid: plid},
-		success: function(data) { 
-			parseAutoResults(data, need); 
+// function autoAdd(){
+// 	console.log("autoAdd called");
+// 	var need = 60 - myPlaylist.length;
+// 	var plid = "PL8A83124F1D79BD4F";
+// 	$.ajax({
+// 		type: 'POST',
+// 		url: './php/getplaylist.php',
+// 		data: {playlistid: plid},
+// 		success: function(data) { 
+// 			parseAutoResults(data, need); 
+// 		}
+// 	});
+// }
+
+	function autoAdd()
+	{
+		var numNeeded = 60 - myPlaylist.length;
+		for(var i = 0; i<numNeeded; i++)
+		{
+			myPlaylist.push({vidid:"dQw4w9WgXcQ", metaData: "fuck you schemby"});
 		}
-	});
-}
+		$("#shuffle").click();
+		sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
+		window.location.assign("play.html");
+	}
 
 function parseAutoResults(data, need){
 	var tmp = data.split("<br>");
@@ -320,6 +332,7 @@ function displayResult(id, title)
 	// addButton.innerHTML += "<span class='videoItemButton fa fa-plus'></span>";
 
 	var minusButton = document.createElement("li");
+	minusButton.setAttribute("vidid", id);
 	minusButton.innerHTML += "<span class='videoItemButton fa fa-minus'></span>";
 
 	// addButton.addEventListener("click", function(){
@@ -334,14 +347,9 @@ function displayResult(id, title)
 
 	minusButton.addEventListener("click", function(){
 		var item = this.parentNode.parentNode.parentNode;
-		var vidid = item.getAttribute("vidid");
+		var vidid = this.getAttribute("vidid");
 		$(item).animate({height:"0"}, 300, function(){$(item).remove();});
 		removeFromMyPlaylist(vidid);
-
-					//this.style.backgroundColor  = "#FF358B";
-					//this.previousSibling.style.backgroundColor = "#FF358B";
-					//this.parentNode.parentNode.style.backgroundColor = "#FF358B";
-					
 	});
 
 	//buttonList.appendChild(addButton);

@@ -135,9 +135,11 @@
 
 <script type="text/javascript">
 		// Variables to hold videoIds and the playlistId
-		var videoIds = [];
-		var addedVideos = [];
+		var itemsPerPage = 20;
+		var pageNum = 1;
 		var myPlaylist;
+		var thisPlaylist = [];
+		var videoIds = [];
 		var playlistId = getQueryVariable("plist");
 		if(!playlistId) {
 			window.location.replace("index.php");
@@ -181,7 +183,6 @@
 							$(addButtons[j]).click();
 						}
 					}
-					//sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
 				});
 
 				$("#play").click(function(){
@@ -197,21 +198,40 @@
 					}
 				});
 
+				$(window).scroll(function() {
+					if($(window).scrollTop() == $(document).height() - $(window).height()) 
+					{
+						pageNum += 1;
+						displayPage(pageNum);      
+					}
+				});
+
 			});
 		}
 
-		function autoAdd(){
-			console.log("autoAdd called");
-			var need = 60 - JSON.parse(sessionStorage.getItem('videoIds')).length;
-			var plid = "PL8A83124F1D79BD4F";
-			$.ajax({
-				type: 'POST',
-				url: './php/getplaylist.php',
-				data: {playlistid: plid},
-				success: function(data) { 
-					parseAutoResults(data, need); 
-				}
-			});
+		// function autoAdd(){
+		// 	console.log("autoAdd called");
+		// 	var need = 60 - JSON.parse(sessionStorage.getItem('videoIds')).length;
+		// 	var plid = "PL8A83124F1D79BD4F";
+		// 	$.ajax({
+		// 		type: 'POST',
+		// 		url: './php/getplaylist.php',
+		// 		data: {playlistid: plid},
+		// 		success: function(data) { 
+		// 			parseAutoResults(data, need); 
+		// 		}
+		// 	});
+		// }
+
+		function autoAdd()
+		{
+			var numNeeded = 60 - myPlaylist.length;
+			for(var i = 0; i<numNeeded; i++)
+			{
+				myPlaylist.push({vidid:"dQw4w9WgXcQ", metaData: "fuck you schemby"});
+			}
+			sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
+			window.location.assign("show.html");
 		}
 
 		function parseAutoResults(data, need){
@@ -241,7 +261,6 @@
 						console.log("db"); 
 						var tmp = data.split("<br>");
 						displayPlaylistTitle(tmp[0]); 
-						//displayPlaylistCount(tmp[1]);
 						requestPlaylistFromDB(plistId); 
 					} else { 
 						console.log("youtube"); 
@@ -270,11 +289,13 @@
 			for(var i=0; i<tmp.length; i+=2) {
 				if(tmp[i+1] != "Deleted video")
 				{
-					videoIds.push(tmp[i]);
-					displayResult(tmp[i+1], tmp[i]);
+					thisPlaylist.push({vidid:tmp[i], metaData:tmp[i+1]});
+					//videoIds.push(tmp[i]);
+					//displayResult(tmp[i+1], tmp[i]);
 				}
 			}
-			displayPlaylistCount(videoIds.length);
+			displayPlaylistCount(thisPlaylist.length);
+			displayPage(pageNum);
 		}
 		
 		function displayPlaylistTitle(title, length) {
@@ -308,9 +329,11 @@
 
 		function displayResult(title, id) 
 		{
+			console.log("displaying video");
+
 			var thumbnail_url = "http://img.youtube.com/vi/" + id + "/default.jpg";
 			var videoObj = {id:id, image:thumbnail_url, title:title};
-			addedVideos.push(videoObj);
+			//addedVideos.push(videoObj);
 
 			var col = document.createElement("div");
 			col.className = "col-sm-6 videoGridItem";
@@ -347,7 +370,6 @@
 			addButton.addEventListener("click", function(){
 				if(this.style.backgroundColor != "#AEEE00")
 				{
-					console.log(this.parentNode.parentNode.getAttribute("vidid"));
 					addVideoToMyPlaylist(title, id);
 					this.style.backgroundColor = "#AEEE00";
 					this.nextSibling.style.backgroundColor = "#AEEE00";
@@ -356,10 +378,9 @@
 			});
 
 			minusButton.addEventListener("click", function(){
-				var item = this.parentNode.parentNode.parentNode;
-				var vidid = item.getAttribute("vidid");
 				$(item).animate({height:"0"}, 300, function(){$(item).remove();});
-				removeVideoFromMyPlaylist(vidid);
+				removeVideoFromMyPlaylist(id);
+				removeVideoFromThisPlaylist(id);
 			});
 
 			buttonList.appendChild(addButton);
@@ -384,7 +405,7 @@
 		}
 
 
-		function removeVideoFromMyPlaylist(id)
+		function removeVideoFromMyPlaylist(id) //stored playlist for power hour
 		{
 			for(var i = 0; i<myPlaylist.length; i++)
 			{
@@ -394,17 +415,21 @@
 					break;
 				}
 			}
+			sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
+			displayPlaylistCount(thisPlaylist.length);
+		}
 
-			for(var j = 0; j<videoIds.length; j++)
+		function removeVideoFromThisPlaylist(id) //currently displayed playlist
+		{
+			for(var i = 0; i<thisPlaylist.length; i++)
 			{
-				if(videoIds[j] == id)
+				if(thisPlaylist[i].vidid == id)
 				{
-					videoIds.splice(j, 1);
+					thisPlaylist.splice(i, 1);
 					break;
 				}
 			}
-			sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
-			displayPlaylistCount(videoIds.length);
+			displayPlaylistCount(thisPlaylist.length);
 		}
 
 		function shuffle(array) {
@@ -424,6 +449,28 @@
 			}
 
 			return array;
+		}
+
+		function displayPage(pNum)
+		{
+			var start = itemsPerPage*(pNum - 1);
+			var stop = start+itemsPerPage;
+
+			if(thisPlaylist.length >= stop)
+			{
+				for(var i = start; i<stop; i++)
+				{
+					displayResult(thisPlaylist[i].metaData, thisPlaylist[i].vidid);
+				}
+			}
+			else if(thisPlaylist.length > start && thisPlaylist.length < stop)
+			{
+				for(var i = start; i<thisPlaylist.length; i++)
+				{
+					displayResult(thisPlaylist[i].metaData, thisPlaylist[i].vidid);
+				}
+			}
+
 		}
 
 		function requestPlaylistFromYoutube(playlistId, pageToken) {
@@ -450,9 +497,9 @@
 					if(response.items[i].snippet.title && response.items[i].snippet.title != 'Private video') {
 						var id = response.items[i].snippet.resourceId.videoId;
 						var title = response.items[i].snippet.title;
+						thisPlaylist.push({vidid:id, metaData:title});
 						ids.push(id);
 						titles.push(title);
-						displayResult(response.items[i].snippet.title, id);
 					}	
 				}
 				
@@ -469,6 +516,9 @@
 				}
 				// If all videoIds have been retrieved, then store them in session storage
 				else {
+
+					displayPlaylistCount(thisPlaylist.length);
+					displayPage(pageNum);
 					requestOptions = {
 						id: playlistId,
 						part: 'snippet',
