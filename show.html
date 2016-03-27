@@ -151,7 +151,7 @@ Functionality:
 
 
 </body>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
 
 <script type="text/javascript">
@@ -181,6 +181,21 @@ $(document).ready(function(){
 		document.getElementById('go').disabled = true;
 		document.getElementById('shuffle').disabled = true;
 	}
+
+setTimeout(function(){
+	$("#playlistVideos").sortable({
+		update: function(){
+			updatePlayOrder();
+		},
+		start: function(event, ui) {
+			ui.item.bind("click.prevent",
+				function(event) { event.preventDefault(); });
+		},
+		stop: function(event, ui) {
+			setTimeout(function(){ui.item.unbind("click.prevent");}, 300);
+		}
+	});
+}, 2000);
 
 	$("#play").click(function() {
 		if(myPlaylist.length < 60){

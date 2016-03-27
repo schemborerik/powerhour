@@ -187,26 +187,6 @@
 			$("#upnext").append(thumb);
 		}
 
-		// function displayThumbs(vid, data)
-		// {
-		// 	//var data = metaMap.get(vid);
-		// 	var thumbnail_url = "http://img.youtube.com/vi/" + vid + "/default.jpg";
-		// 	var thumb = "<li video_id=" +vid + "><div id = 'thumb' style='background: url("+thumbnail_url+");'><div class = 'transbox'>";
-		// 	thumb += "<marquee behavior='scroll' direction='left' vspace='30px' id='songInfo'>"+data+"</marquee>"
-		// 	thumb += "</div></div></li>";
-		// 	//console.log("Index of vid: " + videoIds.indexOf(vid));
-		// 	thumbList[videoIds.indexOf(vid)] = thumb;
-		// 	//console.log("metamap: " + metaMap.size + " videoIds: " + videoIds.length + " thumbList: " + thumbList.length);
-		// 	if(thumbCount == videoIds.length)
-		// 	{
-		// 		console.log("adding thumbs");
-		// 		for(var i = 0; i<videoIds.length; i++)
-		// 		{
-		// 			$("#upnext").append(thumbList[i]);
-		// 		}
-		// 	}
-		// }
-
 		function getMetaData(vId){
 			$.ajax({
 			type: 'GET',
@@ -457,19 +437,6 @@
 					//console.log("video index: " + vidIndex);
 
 					advanceUpnextSelection(vidIndex);
-
-					// var children = $("#upnext").children();
-					// var current_e = children[vidIndex];
-					// var chilOfCur = $(current_e).children();
-					// var selected = chilOfCur[0];
-					// $(selected).addClass('playing');
-					// if(vidIndex != 0){
-					// 	var lastInd = vidIndex - 1;
-					// 	var last_e = children[lastInd];
-					// 	var chilOfLast = $(last_e).children();
-					// 	var unselected = chilOfLast[0];
-					// 	$(unselected).removeClass();
-					//}
 
 					this.playCounter--;
 					
