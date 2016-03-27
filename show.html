@@ -18,7 +18,6 @@ Functionality:
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/lodash.js"></script>
 
-
 	<!-- Bootstrap Core JavaScript -->
 	<script src="js/bootstrap.min.js"></script>
 
@@ -26,13 +25,11 @@ Functionality:
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 	<script src="js/classie.js"></script>
 
-
 	<!-- Contact Form JavaScript -->
 	<script src="js/jqBootstrapValidation.js"></script>
 
 	<!-- Custom Theme JavaScript -->
 	<script src="js/agency.js"></script>
-	<script src="js/freewall.js"></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
@@ -48,8 +45,9 @@ Functionality:
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<!-- Custom CSS -->
 	<link href="css/agency.css" rel="stylesheet">
-	<link href="css/freewall.css">
 	<link href="toastr/toastr-master/toastr.css" rel = "stylesheet"/>
+	<link href="css/kylecss.css" rel = "stylesheet"/>
+
 
 	<!-- Custom Fonts -->
 	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -91,9 +89,6 @@ Functionality:
 					<li>
 						<a class="page-scroll" href="./#about">About</a>
 					</li>
-					<!-- <li>
-						<a class="page-scroll" href="./#team">Team</a>
-					</li> -->
 					<li>
 						<a class="page-scroll" href="./#contact">Contact</a>
 					</li>
@@ -115,35 +110,35 @@ Functionality:
 			<!-- /.navbar-collapse -->
 		</div>
 		<!-- /.container-fluid -->
-
-		<div id="headerWrapper">
-			<div class="col-lg-12 text-center myPowerHourHeader">
-				<h2 class="section-heading" id="title">My Power Hour</h2>
-				<h2 class = "section-heading"><small id="numVideos"></small></h2>
-
-				<div id="buttonHeaderHolder">
-					<button id="removeAllVids" class="headerButton btn btn-default">
-						<span class="glyphicon glyphicon-minus"></span> Remove All
-					</button>
-					<button id="shuffle" class="headerButton btn btn-default">
-						<span class="glyphicon glyphicon-random"></span> Shuffle
-					</button>
-					<button id="play" class="headerButton btn btn-default">
-						<span class="glyphicon glyphicon-play"></span> Play
-					</button>
-				</div>
-				<h2 class = "section-heading" id="novideos"></h2>
-			</div>
-		</div>
 	</nav>
 
 
-	<section class="playlistVideosSection">
-		<div class="container" id="content">
-			<div class="listHolder">
-				<ul id="playlistVideos" class="ul-playlistVideos">
+	<section>
+		<div class="container">
+			<div id="headerWrapper">
+				<div class="col-lg-12 text-center myPowerHourHeader">
+					<h2 class="section-heading" id="title">My Power Hour</h2>
+					<h2 class = "section-heading"><small id="numVideos"></small></h2>
 
-				</ul>
+					<div id="buttonHeaderHolder">
+						<button id="removeAllVids" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-minus"></span> Remove All
+						</button>
+						<button id="shuffle" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-random"></span> Shuffle
+						</button>
+						<button id="play" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-play"></span> Play
+						</button>
+					</div>
+					<h2 class = "section-heading" id="novideos"></h2>
+				</div>
+			</div>
+			
+			<div class="listHolder">
+				<div id="playlistVideos" class="row ul-playlistVideos">
+
+				</div>
 			</div>
 		</div>
 	</section>
@@ -281,92 +276,97 @@ function displayResult(id, title)
 	var thumbnail_url = "http://img.youtube.com/vi/" + id + "/default.jpg";
 			//var videoObj = {id:id, image:thumbnail_url, title:title};
 			//addedVideos.push(videoObj);
+			
+	var col = document.createElement("div");
+	col.className = "col-sm-4 videoGridItem";
 
-			var listItem = document.createElement("li");
-			listItem.setAttribute("vidid", id);
+	var listItem = document.createElement("div");
+	listItem.setAttribute("vidid", id);
+	listItem.className = "videoInfo";
+	
+	var videoItem = document.createElement("div");
+	videoItem.className = "videoItem";
 
-			var videoItem = document.createElement("div");
-			videoItem.className = "videoItem";
+	var thumbnail = document.createElement("img");
+	thumbnail.src = thumbnail_url;
+	thumbnail.className ="img-responsive videoInfoImg";
 
-			var thumbnail = document.createElement("img");
-			thumbnail.src = thumbnail_url;
+	var titlePara = document.createElement("p");
+	titlePara.className += "videoInfoText ellipsis";
 
-			var titlePara = document.createElement("p");
-			titlePara.id = "videoInfo";
-			titlePara.className += "videoInfoText";
+	var titleNode = document.createTextNode(title);
+	titlePara.appendChild(titleNode);
 
-			var titleNode = document.createTextNode(title);
-			titlePara.appendChild(titleNode);
+	var buttonList = document.createElement("ul");
+	buttonList.className += "btnList";
 
-			var buttonList = document.createElement("ul");
-			buttonList.className += "btnList";
-			buttonList.id = "btnList";
+	// var addButton = document.createElement("li");
+	// addButton.className += "videoAddButton";
+	// addButton.innerHTML += "<span class='videoItemButton fa fa-plus'></span>";
 
-			// var addButton = document.createElement("li");
-			// addButton.className += "videoAddButton";
-			// addButton.innerHTML += "<span class='videoItemButton fa fa-plus'></span>";
+	var minusButton = document.createElement("li");
+	minusButton.innerHTML += "<span class='videoItemButton fa fa-minus'></span>";
 
-			var minusButton = document.createElement("li");
-			minusButton.innerHTML += "<span class='videoItemButton fa fa-minus'></span>";
+	// addButton.addEventListener("click", function(){
+	// 	if(this.style.backgroundColor != "#AEEE00")
+	// 	{
+	// 		console.log(this.parentNode.parentNode.getAttribute("vidid"));
+	// 		this.style.backgroundColor = "#AEEE00";
+	// 		this.nextSibling.style.backgroundColor = "#AEEE00";
+	// 		this.parentNode.parentNode.style.backgroundColor = "#AEEE00";
+	// 	}
+	// });
 
-			// addButton.addEventListener("click", function(){
-			// 	if(this.style.backgroundColor != "#AEEE00")
-			// 	{
-			// 		console.log(this.parentNode.parentNode.getAttribute("vidid"));
-			// 		this.style.backgroundColor = "#AEEE00";
-			// 		this.nextSibling.style.backgroundColor = "#AEEE00";
-			// 		this.parentNode.parentNode.style.backgroundColor = "#AEEE00";
-			// 	}
-			// });
+	minusButton.addEventListener("click", function(){
+		var item = this.parentNode.parentNode.parentNode;
+		var vidid = item.getAttribute("vidid");
+		$(item).animate({height:"0"}, 300, function(){$(item).remove();});
+		removeFromMyPlaylist(vidid);
 
-			minusButton.addEventListener("click", function(){
-				var item = this.parentNode.parentNode;
-				var vidid = item.getAttribute("vidid");
-				$(item).animate({height:"0"}, 300, function(){$(item).remove();});
-				removeFromMyPlaylist(vidid);
+					//this.style.backgroundColor  = "#FF358B";
+					//this.previousSibling.style.backgroundColor = "#FF358B";
+					//this.parentNode.parentNode.style.backgroundColor = "#FF358B";
+					
+	});
 
-							//this.style.backgroundColor  = "#FF358B";
-							//this.previousSibling.style.backgroundColor = "#FF358B";
-							//this.parentNode.parentNode.style.backgroundColor = "#FF358B";
-							
-						});
+	//buttonList.appendChild(addButton);
+	buttonList.appendChild(minusButton);
 
-			//buttonList.appendChild(addButton);
-			buttonList.appendChild(minusButton);
-
-			listItem.appendChild(thumbnail);
-			listItem.appendChild(titlePara);
-			listItem.appendChild(buttonList);
+	listItem.appendChild(thumbnail);
+	listItem.appendChild(titlePara);
+	listItem.appendChild(buttonList);
+	
+	col.appendChild(listItem);
 
 
-			$("#playlistVideos").append(listItem);
-		}
+	$("#playlistVideos").append(col);
+}
 
-		function removeFromMyPlaylist(vidid)
+function removeFromMyPlaylist(vidid)
+{
+	for(var i = 0; i<myPlaylist.length; i++)
+	{
+		if(myPlaylist[i].vidid == vidid)
 		{
-			for(var i = 0; i<myPlaylist.length; i++)
-			{
-				if(myPlaylist[i].vidid == vidid)
-				{
-					console.log("removing " + vidid);
-					myPlaylist.splice(i, 1);
-				}
-			}
-			sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
-			document.getElementById('numVideos').innerHTML = myPlaylist.length + " Videos";
+			console.log("removing " + vidid);
+			myPlaylist.splice(i, 1);
 		}
+	}
+	sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
+	document.getElementById('numVideos').innerHTML = myPlaylist.length + " Videos";
+}
 
-		function getMetaData(vId){
-			$.ajax({
-				type: 'GET',
-				url: './php/getmetadata.php',
-				data: { id: vId},
-				success: function(data) {
-					console.log(data); 
-					displayResult(vId, data);
-				}
-			});
+function getMetaData(vId){
+	$.ajax({
+		type: 'GET',
+		url: './php/getmetadata.php',
+		data: { id: vId},
+		success: function(data) {
+			console.log(data); 
+			displayResult(vId, data);
 		}
+	});
+}
 
 
 function displayPage(pNum)
