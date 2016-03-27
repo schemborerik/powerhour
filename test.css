@@ -7,14 +7,14 @@
 }
 
 #fullscreen-element{
-	text-align: center;
+	text-align: left;
 	background-color:#000000;
 }
 
 #metadata {
 	position:absolute;
-	left: 50px;
-	bottom: 80px;
+	left: 10%;
+	bottom: 8%;
 	z-index:2;
 	
 	color: cyan;

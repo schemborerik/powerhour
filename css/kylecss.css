@@ -1,0 +1,95 @@
+/*#buttonHeaderHolder
+{*/
+  /*float: right;*/
+  /*right: 0px;
+  top: 100px;*/
+  /*padding-top: 80px;*/
+  /*padding-bottom: 0;*/
+  /*text-align: center;*/
+  /*position: fixed;
+  margin: 5px;
+}*/
+
+#playlist
+{
+  /*padding-top: 0px;*/
+}
+/*
+ul.ul-playlistVideos
+{
+  display: inline-block;
+  text-align: left;
+
+}*/
+/*
+ul.ul-playlistVideos li
+{
+  list-style-type: none;
+  background-color: #FF358B;*/
+  /*background-color: #AEEE00;*/
+  /*float: left;*/
+  /*padding: 5px;*/
+  /*margin: 10px;*/
+  /*border: 1px solid #AEEE00;*/
+  /*display: block;
+  opacity: 0.6;
+}*/
+
+.videoInfo:hover
+{
+  opacity: 1;
+}
+
+.videoGridItem
+{
+	margin-bottom:20px;
+}
+
+.videoInfo
+{
+	opacity: 0.6;
+	position:relative;
+  color: white;
+	background-color: #FF358B;
+	padding:10px;
+	text-align:left;
+}
+
+.videoInfoImg {
+	display:inline-block;
+	width:20%;
+}
+  
+p.videoInfoText {  
+	display:inline-block;
+	width:70%;
+	max-width:70%;
+	margin-left:5px;
+	overflow:hidden;
+	vertical-align:middle;
+}  
+
+.btnList
+{
+	position: absolute;
+	right: 0%;
+	top: 50%;
+	margin-right: 10px;
+}
+
+ul.btnList li
+{
+	list-style-type:none;
+}
+
+.videoItemButton
+{
+  /*background-color: transparent;*/
+  color: white;
+}
+
+.ellipsis {  
+    white-space: nowrap;  
+    overflow: hidden;  
+    text-overflow: ellipsis;  
+}  
