@@ -384,8 +384,8 @@
 			// Starts a video on the backgroundPlayer so that it will begin loading and get the metadata of the video from the database
 			this.load = function () {        
 				// Load the video which will trigger play event after done loading
-				this.backgroundPlayer.loadVideoById(videoIds[this.loadIndex], 60, "highres");
-				
+				//this.backgroundPlayer.loadVideoById(videoIds[this.loadIndex], 60, "highres");
+				this.backgroundPlayer.loadVideoById(myPlaylist[this.loadIndex].vidid, 60, "highres");
 				// Set the video's quality
 				this.backgroundPlayer.setPlaybackQuality("hd720");  
 				
@@ -393,16 +393,17 @@
 				this.playQueue.push(this.loadIndex);
 				
 				// Load metadata through ajax call to the database
-				$.ajax({
-					type: 'GET',
-					url: './php/getmetadata.php',
-					data: { id: videoIds[this.loadIndex]},
-					success: function(data) { 
-						//console.log(data);
-						this.metadata = data;
-					}.bind(this),
-				});
-				
+				// $.ajax({
+				// 	type: 'GET',
+				// 	url: './php/getmetadata.php',
+				// 	data: { id: videoIds[this.loadIndex]},
+				// 	success: function(data) { 
+				// 		//console.log(data);
+				// 		this.metadata = data;
+				// 	}.bind(this),
+				// });
+				this.metadata = myPlaylist[this.loadIndex].metaData;
+
 				// Indicate the index of the next video to load
 				this.loadIndex++
 			}
