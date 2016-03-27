@@ -85,16 +85,6 @@ include("./php/setpopularyoutube.php");
             <a class="page-scroll" href="./show.html">My List</a>
           </li>
         </ul>
-        <div id="topsearch" class="col-sm-4 col-md-4">
-          <form class="navbar-form" role="search" id="search_bar" action="results.html" method="GET">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search" name="search_query" id="query_top">
-              <div class="input-group-btn">
-                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-              </div>
-            </div>
-          </form>
-        </div>
       </div>
       <!-- /.navbar-collapse -->
     </div>
@@ -134,122 +124,119 @@ include("./php/setpopularyoutube.php");
             <div class="caption">
               <div class="caption-content">
                 <?php echo $titles[0]; ?>
-                <!--<i class="fa fa-search-plus fa-3x">HELLO</i>-->
               </div>
             </div>
-
             <table>
-             <tr>
-              <td><img src="http://img.youtube.com/vi/<?php echo $vid1[0]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-              <td><img src="http://img.youtube.com/vi/<?php echo $vid2[0]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-            </tr>
-            <tr>
-              <td><img src="http://img.youtube.com/vi/<?php echo $vid3[0]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-              <td><img src="http://img.youtube.com/vi/<?php echo $vid4[0]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-            </tr>
-          </table>
-        </a>
-      </div>
-      <div class="col-sm-4 portfolio-item">
-        <a href="playlist.html?plist=<?php echo $mostpopularids[1]?>" class="portfolio-link" data-toggle="modal">
-          <div class="caption">
-            <div class="caption-content">
-              <?php echo $titles[1] ?>
-            </div>
-          </div>
-          <table id="table1">
-           <tr>
-            <td><img src="http://img.youtube.com/vi/<?php echo $vid1[1]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-            <td><img src="http://img.youtube.com/vi/<?php echo $vid2[1]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-          </tr>
-          <tr>
-            <td><img src="http://img.youtube.com/vi/<?php echo $vid3[1]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-            <td><img src="http://img.youtube.com/vi/<?php echo $vid4[1]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-          </tr>
-        </table>
-      </a>
-    </div>
-    <div class="col-sm-4 portfolio-item">
-      <a href="playlist.html?plist=<?php echo $mostpopularids[2]?>" class="portfolio-link" data-toggle="modal">
-        <div class="caption">
-          <div class="caption-content">
-            <?php echo $titles[2] ?>
-          </div>
-        </div>
-        <table>
-         <tr>
-          <td><img src="http://img.youtube.com/vi/<?php echo $vid1[2]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-          <td><img src="http://img.youtube.com/vi/<?php echo $vid2[2]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-        </tr>
-        <tr>
-          <td><img src="http://img.youtube.com/vi/<?php echo $vid3[2]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-          <td><img src="http://img.youtube.com/vi/<?php echo $vid4[2]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-        </tr>
-      </table>
-    </a>
-  </div>
-  <div class="col-sm-4 portfolio-item">
-    <a href="playlist.html?plist=<?php echo $mostpopularids[3]?>" class="portfolio-link" data-toggle="modal">
-      <div class="caption">
-        <div class="caption-content">
-          <?php echo $titles[3] ?>
-        </div>
-      </div>
-      <table>
-       <tr>
-        <td><img src="http://img.youtube.com/vi/<?php echo $vid1[3]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-        <td><img src="http://img.youtube.com/vi/<?php echo $vid2[3]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      </tr>
-      <tr>
-        <td><img src="http://img.youtube.com/vi/<?php echo $vid3[3]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-        <td><img src="http://img.youtube.com/vi/<?php echo $vid4[3]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      </tr>
-    </table>
-  </a>
-</div>
-<div class="col-sm-4 portfolio-item">
-  <a href="playlist.html?plist=<?php echo $mostpopularids[4]?>" class="portfolio-link" data-toggle="modal">
-    <div class="caption">
-      <div class="caption-content">
-        <?php echo $titles[4] ?>
-      </div>
-    </div>
-    <table>
-     <tr>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid1[4]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid2[4]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-    </tr>
-    <tr>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid3[4]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid4[4]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-    </tr>
-  </table>
-</a>
-</div>
-<div class="col-sm-4 portfolio-item">
-  <a href="playlist.html?plist=<?php echo $mostpopularids[5]?>" class="portfolio-link" data-toggle="modal">
-    <div class="caption">
-      <div class="caption-content">
-        <?php echo $titles[5] ?>
-      </div>
-    </div>
-    <table>
-     <tr>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid1[5]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid2[5]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-    </tr>
-    <tr>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid3[5]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-      <td><img src="http://img.youtube.com/vi/<?php echo $vid4[5]; ?>/mqdefault.jpg" width="180px" alt=""></td>
-    </tr>
-  </table>
-</a>
-</div>
-</div>
-</div>
-</section>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[0]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[0]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[0]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[0]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+						</table>
+					</a>
+				</div>
+				<div class="col-sm-4 portfolio-item">
+					<a href="playlist.html?plist=<?php echo $mostpopularids[1]?>" class="portfolio-link" data-toggle="modal">
+						<div class="caption">
+							<div class="caption-content">
+								<?php echo $titles[1] ?>
+							</div>
+						</div>
+						<table id="table1">
+						 <tr>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[1]; ?>/mqdefault.jpg" alt=""></td>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[1]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[1]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[1]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+						</table>
+					</a>
+				</div>
+				<div class="col-sm-4 portfolio-item">
+					<a href="playlist.html?plist=<?php echo $mostpopularids[2]?>" class="portfolio-link" data-toggle="modal">
+						<div class="caption">
+							<div class="caption-content">
+								<?php echo $titles[2] ?>
+							</div>
+						</div>
+						<table>
+						 <tr>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[2]; ?>/mqdefault.jpg" alt=""></td>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[2]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[2]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[2]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+						</table>
+					</a>
+				</div>
+				<div class="col-sm-4 portfolio-item">
+					<a href="playlist.html?plist=<?php echo $mostpopularids[3]?>" class="portfolio-link" data-toggle="modal">
+						<div class="caption">
+							<div class="caption-content">
+								<?php echo $titles[3] ?>
+							</div>
+						</div>
+						<table>
+						 <tr>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[3]; ?>/mqdefault.jpg" alt=""></td>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[3]; ?>/mqdefault.jpg" alt=""></td>
+						</tr>
+						<tr>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[3]; ?>/mqdefault.jpg" alt=""></td>
+							<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[3]; ?>/mqdefault.jpg" alt=""></td>
+						</tr>
+						</table>
+					</a>
+				</div>
+				<div class="col-sm-4 portfolio-item">
+					<a href="playlist.html?plist=<?php echo $mostpopularids[4]?>" class="portfolio-link" data-toggle="modal">
+						<div class="caption">
+							<div class="caption-content">
+								<?php echo $titles[4] ?>
+							</div>
+						</div>
+						<table>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[4]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[4]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[4]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[4]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+						</table>
+					</a>
+				</div>
+				<div class="col-sm-4 portfolio-item">
+					<a href="playlist.html?plist=<?php echo $mostpopularids[5]?>" class="portfolio-link" data-toggle="modal">
+						<div class="caption">
+							<div class="caption-content">
+								<?php echo $titles[5] ?>
+							</div>
+						</div>
+						<table>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid1[5]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid2[5]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+							<tr>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid3[5]; ?>/mqdefault.jpg" alt=""></td>
+								<td><img class="img-responsive" src="http://img.youtube.com/vi/<?php echo $vid4[5]; ?>/mqdefault.jpg" alt=""></td>
+							</tr>
+						</table>
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
 <!-- freewall -->
-</section>
 
 <!--popular among users -->
 
@@ -347,10 +334,10 @@ include("./php/setpopularyoutube.php");
       <footer>
         <div class="container">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-sm-4">
               <span class="copyright">Copyright &copy; Your Website 2014</span>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-4">
               <ul class="list-inline social-buttons">
                 <li><a href="#"><i class="fa fa-twitter"></i></a>
                 </li>
@@ -360,7 +347,7 @@ include("./php/setpopularyoutube.php");
                 </li>
               </ul>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-4">
               <ul class="list-inline quicklinks">
                 <li><a href="#">Privacy Policy</a>
                 </li>
