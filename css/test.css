@@ -1,11 +1,3 @@
-.av-content {
-	position:relative;
-	min-height:512px;
-	min-width:854px;
-	z-index:0;
-	display: inline-block;
-}
-
 #fullscreen-element{
 	text-align: left;
 	background-color:#000000;

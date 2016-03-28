@@ -71,7 +71,7 @@
 						<a href="./#page-top"></a>
 					</li>
 					<li>
-						<a class="page-scroll" href="./#mostpopular">Most Popular</a>
+						<a class="page-scroll" href="./#mostpopular">Popular</a>
 					</li>
 					<li>
 						<a class="page-scroll" href="./#about">About</a>
@@ -337,6 +337,8 @@
 
 			var col = document.createElement("div");
 			col.className = "col-sm-6 videoGridItem";
+			
+			
 	
 			var listItem = document.createElement("div");
 			listItem.setAttribute("vidid", id);
@@ -344,20 +346,23 @@
 
 			var videoItem = document.createElement("div");
 			videoItem.className = "videoItem";
+			
+			var imgContainer = document.createElement("div");
+			imgContainer.className = "thumbnailContainer";
 
 			var thumbnail = document.createElement("img");
 			thumbnail.src = thumbnail_url;
-			thumbnail.className ="img-responsive videoInfoImg";
+			thumbnail.className ="img-responsive centeredVertically";
 
 			var titlePara = document.createElement("p");
 			titlePara.id = "videoInfo";
-			titlePara.className += "videoInfoText";
+			titlePara.className += "videoInfoText centeredVertically";
 
 			var titleNode = document.createTextNode(title);
 			titlePara.appendChild(titleNode);
 
 			var buttonList = document.createElement("ul");
-			buttonList.className += "btnList";
+			buttonList.className += "btnList centeredVertically";
 			buttonList.id = "btnList";
 
 			var addButton = document.createElement("li");
@@ -386,7 +391,8 @@
 			buttonList.appendChild(addButton);
 			buttonList.appendChild(minusButton);
 
-			listItem.appendChild(thumbnail);
+			imgContainer.appendChild(thumbnail);
+			listItem.appendChild(imgContainer);
 			listItem.appendChild(titlePara);
 			listItem.appendChild(buttonList);
 			

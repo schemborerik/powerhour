@@ -84,7 +84,7 @@ Functionality:
 						<a href="./#page-top"></a>
 					</li>
 					<li>
-						<a class="page-scroll" href="./#mostpopular">Most Popular</a>
+						<a class="page-scroll" href="./#mostpopular">Popular</a>
 					</li>
 					<li>
 						<a class="page-scroll" href="./#about">About</a>
@@ -92,7 +92,7 @@ Functionality:
 					<li>
 						<a class="page-scroll" href="./#contact">Contact</a>
 					</li>
-					<li>
+					<li class="active">
 						<a class="page-scroll" href="./show.html">My List</a>
 					</li>
 				</ul>
@@ -313,19 +313,22 @@ function displayResult(id, title)
 	
 	var videoItem = document.createElement("div");
 	videoItem.className = "videoItem";
+	
+	var imgContainer = document.createElement("div");
+	imgContainer.className = "thumbnailContainer";
 
 	var thumbnail = document.createElement("img");
 	thumbnail.src = thumbnail_url;
-	thumbnail.className ="img-responsive videoInfoImg";
+	thumbnail.className ="img-responsive videoInfoImg centeredVertically";
 
 	var titlePara = document.createElement("p");
-	titlePara.className += "videoInfoText ellipsis";
+	titlePara.className += "videoInfoText centeredVertically ellipsis";
 
 	var titleNode = document.createTextNode(title);
 	titlePara.appendChild(titleNode);
 
 	var buttonList = document.createElement("ul");
-	buttonList.className += "btnList";
+	buttonList.className += "btnList centeredVertically";
 
 	// var addButton = document.createElement("li");
 	// addButton.className += "videoAddButton";
@@ -355,7 +358,8 @@ function displayResult(id, title)
 	//buttonList.appendChild(addButton);
 	buttonList.appendChild(minusButton);
 
-	listItem.appendChild(thumbnail);
+	imgContainer.appendChild(thumbnail);
+	listItem.appendChild(imgContainer);
 	listItem.appendChild(titlePara);
 	listItem.appendChild(buttonList);
 	
