@@ -24,6 +24,7 @@
 	<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 	
 	<link rel="stylesheet" type="text/css" href="test.css">
+	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
 
 </head>
 
@@ -105,6 +106,7 @@
 			</div>
 		
 			<div class="container">
+				<div id="progressBarPlayTime"></div>
 				<div class = 'wrap' height="120px">
 					<ul id = "upnext">
 					</ul>
@@ -157,6 +159,11 @@
 				displayThumbs(myPlaylist[k].vidid, myPlaylist[k].metaData);
 				videoIds.push(myPlaylist[k].vidid);
 			}
+
+			$( "#progressBarPlayTime" ).progressbar(
+				{
+					value: 90
+				});
 		});
 		
 		// Get the videoIds from the session variable
