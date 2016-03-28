@@ -175,15 +175,25 @@
 
 				$("#addAllVids").click(function(){
 					//Click the add button on all videos
+
+					for(var k = 0; k<thisPlaylist.length; k++) //add the videos that aren't displayed
+					{
+						if(!thisPlaylist[k].added)
+						{
+							myPlaylist.push(thisPlaylist[k]);
+						}
+					}
 					var addButtons = document.getElementsByClassName("videoAddButton");
 					for(var j = 0; j<addButtons.length; j++)
 					{
-						if(addButtons[j].style.backgroundColor != "#AEEE00")
-						{
-							$(addButtons[j]).click();
-						}
+						addButtons[j].style.backgroundColor = "#AEEE00";
+						addButtons[j].nextSibling.style.backgroundColor = "#AEEE00";
+						addButtons[j].parentNode.parentNode.style.backgroundColor = "#AEEE00";
 					}
+
+					sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
 				});
+
 
 				$("#play").click(function(){
 					//document.getElementById("addVids").click();
@@ -289,7 +299,7 @@
 			for(var i=0; i<tmp.length; i+=2) {
 				if(tmp[i+1] != "Deleted video")
 				{
-					thisPlaylist.push({vidid:tmp[i], metaData:tmp[i+1]});
+					thisPlaylist.push({vidid:tmp[i], metaData:tmp[i+1], added:false});
 					//videoIds.push(tmp[i]);
 					//displayResult(tmp[i+1], tmp[i]);
 				}
@@ -332,7 +342,7 @@
 			console.log("displaying video");
 
 			var thumbnail_url = "http://img.youtube.com/vi/" + id + "/default.jpg";
-			var videoObj = {id:id, image:thumbnail_url, title:title};
+			var videoObj = {id:id, image:thumbnail_url, title:title, added:false};
 			//addedVideos.push(videoObj);
 
 			var col = document.createElement("div");
@@ -375,6 +385,7 @@
 			addButton.addEventListener("click", function(){
 				if(this.style.backgroundColor != "#AEEE00")
 				{
+					markVideoAsAdded(id);
 					addVideoToMyPlaylist(title, id);
 					this.style.backgroundColor = "#AEEE00";
 					this.nextSibling.style.backgroundColor = "#AEEE00";
@@ -436,6 +447,18 @@
 				}
 			}
 			displayPlaylistCount(thisPlaylist.length);
+		}
+
+		function markVideoAsAdded(id)
+		{
+			for(var i = 0; i<thisPlaylist.length; i++)
+			{
+				if(thisPlaylist[i].vidid == id)
+				{
+					thisPlaylist[i].added = true;
+					break;
+				}
+			}
 		}
 
 		function shuffle(array) {
@@ -503,7 +526,7 @@
 					if(response.items[i].snippet.title && response.items[i].snippet.title != 'Private video') {
 						var id = response.items[i].snippet.resourceId.videoId;
 						var title = response.items[i].snippet.title;
-						thisPlaylist.push({vidid:id, metaData:title});
+						thisPlaylist.push({vidid:id, metaData:title, added:false});
 						ids.push(id);
 						titles.push(title);
 					}	
