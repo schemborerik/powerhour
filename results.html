@@ -62,7 +62,7 @@
             <a class="page-scroll" href="./#contact">Contact</a>
           </li>
           <li>
-            <a class="page-scroll" href="./show.html">My List</a>
+            <a class="page-scroll" href="./myplaylist.html">My List</a>
           </li>
         </ul>
         <div class="col-sm-4 col-md-4">
@@ -83,110 +83,112 @@
 
   <section id="results">
     <div class="container">
-			<div class="row">
-				<div class="col-lg-12 text-center">
-          <h2 class="section-heading">Results</h2>
-        </div>
+     <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2 class="section-heading">Results</h2>
       </div>
-      <div class="row" id="search-results">
-      </div>
+    </div>
+    <div class="row" id="search-results">
+    </div>
   </section>
 
 
-  </body>
+</body>
 
-   <!-- jQuery -->
-  <script src="js/jquery.js"></script>
-  <script src="js/jquery-ui.min.js"></script>
-  <script src="js/lodash.js"></script>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/lodash.js"></script>
 
-  <!-- Bootstrap Core JavaScript -->
-  <script src="js/bootstrap.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
 
-  <!-- Plugin JavaScript -->
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-  <script src="js/classie.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
 
 
-  <!-- Contact Form JavaScript -->
-  <script src="js/jqBootstrapValidation.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
 
-  <!-- Custom Theme JavaScript -->
-  <script src="js/agency.js"></script>
-  <script src="js/freewall.js"></script>
-	
-  <title>Search Results</title>
+<!-- Custom Theme JavaScript -->
+<script src="js/agency.js"></script>
+<script src="js/freewall.js"></script>
 
-  <script type = "text/javascript">
-		var totalVideoCount = 0;
-		var videoIds = [];
-		var playlistId;
-		var thumbnails = [];
-		var query = getQueryVariable("search_query");
-		if(!query) {
-			window.location.replace("index.php");
-		}
+<title>Search Results</title>
 
-		function onClientLoad() {
-			gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
-			gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
-		}
+<script type = "text/javascript">
 
-		function onYouTubeApiLoad() {
-			search();
-			console.log("client is loaded");
-		}
+    var totalVideoCount = 0;
+    var videoIds = [];
+    var playlistId;
+    var thumbnails = [];
+    var query = getQueryVariable("search_query");
+    if(!query) {
+      window.location.replace("index.php");
+    }
 
-		function search() {
-			console.log(getQueryVariable("search_query"));
-			var request = gapi.client.youtube.search.list({
-				part: 'snippet',
-				q:query,
-				maxResults:10,
-				type:"playlist",
-				//author: "Most Popular",
-				order:"viewCount",
-			});
+    function onClientLoad() {
+      gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
+      gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
+    }
 
-			request.execute(onSearchResponse);
-		}
+    function onYouTubeApiLoad() {
+      search();
+    }
 
-		function onSearchResponse(response) {
-			for(var i=0; i<response.items.length; ++i){
-				var playlistTitle = response.items[i].snippet.title;
-				var playlistId = response.items[i].id.playlistId;
-				var thumbnail_url = response.items[i].snippet.thumbnails.medium.url;
-				
-				var thumb = "<div class='col-sm-6 portfolio-item'>";
-				thumb += "<a href=./playlist.html?plist=" + playlistId + " class='portfolio-link' data-toggle='modal'>";
-				thumb += "<div class='caption'><div class='caption-content'>";
-				thumb += playlistTitle;
+    function search() {
+      var request = gapi.client.youtube.search.list({
+        part: 'snippet',
+        q:query,
+        maxResults:10,
+        type:"playlist",
+    				//author: "Most Popular",
+    				order:"viewCount",
+    	});
+      request.execute(onSearchResponse);
+    }
+
+    function onSearchResponse(response) 
+    {
+      for(var i=0; i<response.items.length; ++i)
+      {
+        var playlistTitle = response.items[i].snippet.title;
+        var playlistId = response.items[i].id.playlistId;
+        var thumbnail_url = response.items[i].snippet.thumbnails.medium.url;
+
+        var thumb = "<div class='col-sm-6 portfolio-item'>";
+        thumb += "<a href=./playlist.html?plist=" + playlistId + " class='portfolio-link' data-toggle='modal'>";
+        thumb += "<div class='caption'><div class='caption-content'>";
+        thumb += playlistTitle;
         thumb += "</div></div>";
-				thumb += "<img src='" + thumbnail_url + "'>";
-				thumb += "</a>";
-				thumb += "</div>";
+        thumb += "<img src='" + thumbnail_url + "'>";
+        thumb += "</a>";
+        thumb += "</div>";
+        thumbnails.push(thumb);
+      }
 
-				thumbnails.push(thumb);
-			}
-			$(document).ready(function(){
-				for(i = 0; i <thumbnails.length; i++){
-					$("#search-results").append(thumbnails[i]);
-				}
-			});
-		}
+      $(document).ready(function(){
+        for(i = 0; i <thumbnails.length; i++)
+        {
+          $("#search-results").append(thumbnails[i]);
+        }
+      });
+    }
 
-		function getQueryVariable(variable)
-		{
-			var query = window.location.search.substring(1);
-			var vars = query.split("&");
-			for (var i=0;i<vars.length;i++) {
-				var pair = vars[i].split("=");
-				if(pair[0] == variable){return pair[1];}
-			}
-			return(false);
-		}
+    function getQueryVariable(variable)
+    {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i=0;i<vars.length;i++) 
+      {
+        var pair = vars[i].split("=");
+        if(pair[0] == variable){return pair[1];}
+      }
+      return(false);
+    }
 
-  </script>
-  <script src="https://apis.google.com/js/client.js?onload=onClientLoad"></script>
+</script>
+<script src="https://apis.google.com/js/client.js?onload=onClientLoad"></script>
 
 </html>

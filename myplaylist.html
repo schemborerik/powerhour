@@ -93,7 +93,7 @@ Functionality:
 						<a class="page-scroll" href="./#contact">Contact</a>
 					</li>
 					<li class="active">
-						<a class="page-scroll" href="./show.html">My List</a>
+						<a class="page-scroll" href="./myplaylist.html">My List</a>
 					</li>
 				</ul>
 				<div class="col-sm-4 col-md-4">
@@ -173,24 +173,24 @@ $(document).ready(function(){
 
 	if(myPlaylist.length == 0){
 		document.getElementById('novideos').innerHTML = "Start Searching So We Can Start Drinking!";
-		document.getElementById('play').disabled = true;
-		document.getElementById('shuffle').disabled = true;
+		document.getElementById("buttonHeaderHolder").style.display = "None";
 	}
 
-setTimeout(function(){
-	$("#playlistVideos").sortable({
-		update: function(){
-			updatePlayOrder();
-		},
-		start: function(event, ui) {
-			ui.item.bind("click.prevent",
-				function(event) { event.preventDefault(); });
-		},
-		stop: function(event, ui) {
-			setTimeout(function(){ui.item.unbind("click.prevent");}, 300);
-		}
-	});
-}, 2000);
+// If we want the list sortable
+// setTimeout(function(){
+// 	$("#playlistVideos").sortable({
+// 		update: function(){
+// 			updatePlayOrder();
+// 		},
+// 		start: function(event, ui) {
+// 			ui.item.bind("click.prevent",
+// 				function(event) { event.preventDefault(); });
+// 		},
+// 		stop: function(event, ui) {
+// 			setTimeout(function(){ui.item.unbind("click.prevent");}, 300);
+// 		}
+// 	});
+// }, 2000);
 
 	$("#play").click(function() {
 		if(myPlaylist.length < 60){

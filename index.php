@@ -78,7 +78,7 @@ include("./php/setpopularyoutube.php");
             <a class="page-scroll" href="#contact">Contact</a>
           </li>
           <li>
-            <a class="page-scroll" href="./show.html">My List</a>
+            <a class="page-scroll" href="./myplaylist.html">My List</a>
           </li>
         </ul>
       </div>
