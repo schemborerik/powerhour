@@ -39,6 +39,7 @@ include("./php/setpopularyoutube.php");
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom CSS -->
   <link href="css/agency.css" rel="stylesheet">
+	<link href="css/kylecss.css" rel="stylesheet">
 
   <!-- Custom Fonts -->
   <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -90,9 +91,9 @@ include("./php/setpopularyoutube.php");
   <!-- Header -->
   <header>
     <div class="container">
-      <form class="navbar-form" role="search" id="search_bar" action="results.html" method="GET">
-        <div class="input-group" id="mid-page">
-          <input type="text" class="form-control" name="search_query" id="query_bot" placeholder="Start Searching, So We Can Start Drinking!">
+      <form class="navbar-form" role="search" action="results.php" method="GET">
+        <div class="input-group searchHeader" id="mid-page">
+          <input type="text" class="form-control searchBar" name="search_query" id="query_bot" placeholder="Start Searching, So We Can Start Drinking!">
           <div class="input-group-btn">
             <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
           </div>

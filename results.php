@@ -15,7 +15,7 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom CSS -->
   <link href="css/agency.css" rel="stylesheet">
-  <link href="css/frewall.css"
+  <link href="css/kylecss.css" rel="stylesheet">
 
   <!-- Custom Fonts -->
   <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -55,9 +55,6 @@
           <li>
             <a class="page-scroll" href="./#about">About</a>
           </li>
-<!--           <li>
-            <a class="page-scroll" href="./#team">Team</a>
-          </li> -->
           <li>
             <a class="page-scroll" href="./#contact">Contact</a>
           </li>
@@ -65,33 +62,26 @@
             <a class="page-scroll" href="./myplaylist.html">My List</a>
           </li>
         </ul>
-        <div class="col-sm-4 col-md-4">
-          <form class="navbar-form" role="search" action="results.html" method="GET" id="search_bar">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search" name="search_query" id="query">
-              <div class="input-group-btn">
-                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-              </div>
-            </div>
-          </form>
-        </div>
       </div>
       <!-- /.navbar-collapse -->
     </div>
     <!-- /.container-fluid -->
   </nav>
+	
+	<section>
+	<div class="container">
+		<form class="navbar-form" role="search" id="search_bar" action="results.php" method="GET">
+			<div class="input-group" id="mid-page">
+				<input type="text" class="form-control searchBar" name="search_query" id="query_bot" value="<?php echo $_GET["search_query"] ?>">
+				<div class="input-group-btn">
+					<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+				</div>
+			</div>
+		</form>
+		<div class="row" id="search-results">
+	</div>
 
-  <section id="results">
-    <div class="container">
-     <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading">Results</h2>
-      </div>
-    </div>
-    <div class="row" id="search-results">
-    </div>
-  </section>
-
+	</section>
 
 </body>
 
@@ -113,7 +103,6 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="js/agency.js"></script>
-<script src="js/freewall.js"></script>
 
 <title>Search Results</title>
 
@@ -127,6 +116,9 @@
     if(!query) {
       window.location.replace("index.php");
     }
+		//$(document).ready(function(){
+			//$(".searchBar").val(query);
+		//});
 
     function onClientLoad() {
       gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');

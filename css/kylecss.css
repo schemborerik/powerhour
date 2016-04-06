@@ -70,9 +70,9 @@ ul.btnList li
 }
 
 .ellipsis {  
-    white-space: nowrap;  
-    overflow: hidden;  
-    text-overflow: ellipsis;  
+	white-space: nowrap;  
+	overflow: hidden;  
+	text-overflow: ellipsis;  
 }  
 
 #player{
@@ -83,6 +83,20 @@ ul.btnList li
   #player{
 		padding-top:100px;
 	}
+}
+
+.searchBar
+{
+	color: white;
+}
+
+.searchHeader
+{
+	padding-top:150px;
+}
+
+#mid-page {
+  width: 100%;
 }
 
 
