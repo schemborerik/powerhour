@@ -684,22 +684,6 @@ body {
     -webkit-transform: scale(1);
   }
 }
-#free-wall .brick[data-state="init"] {
-  display: none;
-}
-#free-wall .brick[data-state="start"] {
-  animation: start 0.5s;
-  display: block;
-  -webkit-animation: start 0.5s;
-}
-#free-wall .brick[data-state="move"] {
-  transition: top 0.5s, left 0.5s, width 0.5s, height 0.5s;
-  -webkit-transition: top 0.5s, left 0.5s, width 0.5s, height 0.5s;
-}
-#freewall {
-  height: 100%;
-  width: 100%;
-}
 html, body {
   margin: 0px;
   width: 100%;

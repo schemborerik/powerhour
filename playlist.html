@@ -80,19 +80,12 @@
 						<a class="page-scroll" href="./#contact">Contact</a>
 					</li>
 					<li>
-						<a class="page-scroll" href="./myplaylist.html">My List</a>
+						<div id="noti_Container">
+							<a class="page-scroll" href="./mylist.html">My List</a>
+							<div class="noti_bubble" style="display:none"></div>
+						</div>
 					</li>
 				</ul>
-				<div class="col-sm-4 col-md-4">
-					<form class="navbar-form" role="search" action="results.html" method="GET" id="search_bar">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Search" name="search_query" id="query">
-							<div class="input-group-btn">
-								<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-							</div>
-						</div>
-					</form>
-				</div>
 			</div>
 		</div>
 	</nav>
@@ -123,9 +116,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="listHolder">
-				<div id="playlistVideos" class="row">
-				</div>
+			<div id="playlistVideos" class="row">
 			</div>
 		</div>
 	</section>
@@ -134,16 +125,86 @@
 </body>
 
 <script type="text/javascript">
+
+		$(document).ready(function(){
+			if(sessionStorage.getItem('myListMap_size') > 0) {
+				$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+				$(".noti_bubble").show();
+				console.log(sessionStorage.getItem('myListMap_size'));
+			}
+		});
 		// Variables to hold videoIds and the playlistId
 		var itemsPerPage = 20;
 		var pageNum = 1;
-		var myPlaylist;
 		var thisPlaylist = [];
 		var videoIds = [];
+		
+		// Get our list from session storage, maps 
+		var myListMap;
+		var myListMap_size;
+		if(sessionStorage.getItem('myListMap')) {
+			console.log("retrieving myListMap");
+			myListMap = JSON.parse(sessionStorage.getItem('myListMap'));
+			myListMap_size = parseInt(sessionStorage.getItem("myListMap_size"));
+			console.log(myListMap_size + " items found");
+		} else {
+			console.log("Initializing");
+			myListMap = {};
+			myListMap_size = 0;
+		}
+		
 		var playlistId = getQueryVariable("plist");
 		if(!playlistId) {
 			window.location.replace("index.php");
 		}
+		
+		$(document).ready(function(){
+			$("#myList").click(function(){
+				window.location.assign("mylist.html");
+			});
+
+
+			$("#addAllVids").click(function(){
+				//Click the add button on all videos
+
+				for(var k = 0; k<thisPlaylist.length; k++) //add the videos that aren't displayed
+				{
+					if(myListMap[thisPlaylist[k].video_id] == null) {
+						myListMap[thisPlaylist[k].video_id] = thisPlaylist[k].title;
+						myListMap_size++;
+						
+						var div = document.getElementById(thisPlaylist[k].video_id);
+						if(div)
+							div.className = "video-added";
+					}
+				}
+
+				sessionStorage.setItem("myListMap", JSON.stringify(myListMap));
+				sessionStorage.setItem("myListMap_size", JSON.stringify(myListMap_size));
+				
+				$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+				$(".noti_bubble").show();
+			});
+
+			$("#play").hide();
+			$("#play").click(function(){
+				//document.getElementById("addVids").click();
+				if(myListMap_size < 60) {
+					makeNotEnoughVideosToast(myListMap_size);
+				} else {
+					// add myListMap to myListMap_order
+					play();
+				}
+			});
+
+			$(window).scroll(function() {
+				if($(window).scrollTop() == $(document).height() - $(window).height()) 
+				{
+					pageNum += 1;
+					displayPage(pageNum);
+				}
+			});
+		});
 		
 		function onClientLoad() {
 			gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
@@ -152,160 +213,64 @@
 
 
 		function onYouTubeApiLoad() {
+			console.log("youtube api loaded");
+			getPlaylistInDB(playlistId);
 
-			findPlaylistInDB(playlistId);
-
-			if(sessionStorage.getItem('myPlaylist'))
-			{
-				console.log("retrieving myPlaylist");
-				myPlaylist = JSON.parse(sessionStorage.getItem('myPlaylist'));
-				console.log(myPlaylist.length + " items found");
-			}
-			else
-			{
-				console.log("Initializing myPlaylist");
-				myPlaylist = [];
-			}
-
-			$(document).ready(function(){
-				$("#myList").click(function(){
-					window.location.assign("show.html");
-				});
-
-
-				$("#addAllVids").click(function(){
-					//Click the add button on all videos
-
-					for(var k = 0; k<thisPlaylist.length; k++) //add the videos that aren't displayed
-					{
-						if(!thisPlaylist[k].added)
-						{
-							myPlaylist.push(thisPlaylist[k]);
-						}
-					}
-					var addButtons = document.getElementsByClassName("videoAddButton");
-					for(var j = 0; j<addButtons.length; j++)
-					{
-						addButtons[j].style.backgroundColor = "#AEEE00";
-						addButtons[j].nextSibling.style.backgroundColor = "#AEEE00";
-						addButtons[j].parentNode.parentNode.style.backgroundColor = "#AEEE00";
-					}
-
-					sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
-				});
-
-
-				$("#play").click(function(){
-					//document.getElementById("addVids").click();
-					var numVids = myPlaylist.length;//JSON.parse(sessionStorage.getItem('videoIds')).length;
-					if(numVids > 59)
-					{
-						window.location.assign("play.html");
-					} 
-					else
-					{
-						makeNotEnoughVideosToast(numVids);
-					}
-				});
-
-				$(window).scroll(function() {
-					if($(window).scrollTop() == $(document).height() - $(window).height()) 
-					{
-						pageNum += 1;
-						displayPage(pageNum);      
-					}
-				});
-
-			});
+			
 		}
 
-		// function autoAdd(){
-		// 	console.log("autoAdd called");
-		// 	var need = 60 - JSON.parse(sessionStorage.getItem('videoIds')).length;
-		// 	var plid = "PL8A83124F1D79BD4F";
-		// 	$.ajax({
-		// 		type: 'POST',
-		// 		url: './php/getplaylist.php',
-		// 		data: {playlistid: plid},
-		// 		success: function(data) { 
-		// 			parseAutoResults(data, need); 
-		// 		}
-		// 	});
-		// }
-
+		//TODO fix this
 		function autoAdd()
 		{
-			var numNeeded = 60 - myPlaylist.length;
+			var numNeeded = 60 - myListMap.length;
 			for(var i = 0; i<numNeeded; i++)
 			{
-				myPlaylist.push({vidid:"dQw4w9WgXcQ", metaData: "fuck you schemby"});
+				myListMap['dQw4w9WgXcQ'] = "Rick Roll";
+				myListMap_size++;
 			}
-			sessionStorage.setItem("myPlaylist", JSON.stringify(myPlaylist));
-			window.location.assign("show.html");
+			sessionStorage.setItem("myListMap", JSON.stringify(myListMap));
+			sessionStorage.setItem("myListMap_size", JSON.stringify(myListMap_size));
+			
+			$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+			$(".noti_bubble").show();
+					
+			play();
 		}
-
-		function parseAutoResults(data, need){
-			var tmp = data.split("<br>");
-			tmp.pop();
-			var storedIds = JSON.parse(sessionStorage.getItem('videoIds'));
-			console.log("real need: " + need);
-			need *= 2;
-			console.log("Program need: " + need);
-			for(var i=0; i<need; i+=2) {
-				storedIds.push(tmp[i]);
+		
+		function play() {
+			var myListMap_order = [];
+			for (var property in myListMap) {
+				if (myListMap.hasOwnProperty(property)) {
+						myListMap_order.push( property );
+				}
 			}
-			console.log("new number of videos: " + storedIds.length);
-			sessionStorage.setItem('videoIds', JSON.stringify(storedIds));
-			window.location.assign('show.html');
+			sessionStorage.setItem("myListMap_order", JSON.stringify(myListMap_order));
+			window.location.assign("play.html");
 		}
 
 		// If the playlist is in the database, pull from the db otherwise pull from youtube and add to the database
-		function findPlaylistInDB(plistId) {
+		function getPlaylistInDB(plistId) {
+			console.log(plistId);
 			$.ajax({
 				type: 'POST',
-				url: './php/findplaylist.php',
+				url: './php/getplaylist.php',
 				data: {playlistid: plistId},
+				dataType: 'json',
 				success: function(data) { 
 					//console.log(data); 
+					console.log("getplaylist");
 					if(data) { 
-						console.log("db"); 
-						var tmp = data.split("<br>");
-						displayPlaylistTitle(tmp[0]); 
-						requestPlaylistFromDB(plistId); 
+						console.log(data); 
+						displayPlaylistTitle(data.playlist.playlistTitle); 
+						displayPlaylistCount(data.playlist.num_videos);
+						thisPlaylist = data.videos;
+						displayPage(pageNum);
 					} else { 
 						console.log("youtube"); 
 						requestPlaylistFromYoutube(plistId); 
 					} 
 				}
 			});
-		}
-
-		function requestPlaylistFromDB(plistId) {
-			$.ajax({
-				type: 'POST',
-				url: './php/getplaylist.php',
-				data: {playlistid: plistId},
-				success: function(data) { 
-					//console.log(data);
-					parseResults(data, plistId); 
-				}
-			});
-		}
-		
-		function parseResults(data, plistId) {
-			var tmp = data.split("<br>");
-			tmp.pop();
-			
-			for(var i=0; i<tmp.length; i+=2) {
-				if(tmp[i+1] != "Deleted video")
-				{
-					thisPlaylist.push({vidid:tmp[i], metaData:tmp[i+1], added:false});
-					//videoIds.push(tmp[i]);
-					//displayResult(tmp[i+1], tmp[i]);
-				}
-			}
-			displayPlaylistCount(thisPlaylist.length);
-			displayPage(pageNum);
 		}
 		
 		function displayPlaylistTitle(title, length) {
@@ -317,167 +282,58 @@
 			document.getElementById("dynamNum").innerHTML = length + " videos in this list";
 		}
 
-
-		function fade(el){
-			var vId = $(el).attr('id');
-			var child = $(el).children()[0];
-			var initClass = child.className;
-			//console.log(initClass);
-			//console.log("length on click: "+videoIds.length);
-			if (initClass == "PLtransbox"){
-				var ind = videoIds.indexOf(vId);
-				videoIds.splice(ind,1);
-				//console.log("one removed: "+ videoIds.length);
-				child.className = "PLtransbox-discard";
-			}else {
-				videoIds.push(vId);
-				//console.log("one added: " + videoIds.length);
-				child.className = "PLtransbox";
-			}
-			document.getElementById('dynamNum').innerHTML = videoIds.length + " Videos";
-		}
-
 		function displayResult(title, id) 
 		{
-			console.log("displaying video");
+			console.log("displaying video " + id);
 
-			var thumbnail_url = "http://img.youtube.com/vi/" + id + "/default.jpg";
-			var videoObj = {id:id, image:thumbnail_url, title:title, added:false};
-			//addedVideos.push(videoObj);
-
-			var col = document.createElement("div");
-			col.className = "col-sm-6 videoGridItem";
+			var thumbnail_url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
 			
+			var grid_item = document.createElement("div");
+			grid_item.className = "col-sm-4";
 			
-	
-			var listItem = document.createElement("div");
-			listItem.setAttribute("vidid", id);
-			listItem.className = "videoInfo";
-
-			var videoItem = document.createElement("div");
-			videoItem.className = "videoItem";
+			var video_container = document.createElement("div");
+			video_container.id = id;
+			console.log(myListMap[id]);
+			if(myListMap[id]) {
+				video_container.className = "video-added";
+				console.log("video added");
+			}
 			
-			var imgContainer = document.createElement("div");
-			imgContainer.className = "thumbnailContainer";
-
+			video_container.addEventListener("click", function(){
+				if(this.className === "video-added") {
+					this.className = "";
+					delete myListMap[id];
+		      myListMap_size--;
+				} else {
+					this.className = "video-added";
+					myListMap[id] = title;
+					myListMap_size++;
+				}
+				sessionStorage.setItem('myListMap', JSON.stringify(myListMap));
+				sessionStorage.setItem('myListMap_size', JSON.stringify(myListMap_size));
+				
+				$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+				$(".noti_bubble").show();
+			});
+			
+			var thumbnail_container = document.createElement("div");
+			
 			var thumbnail = document.createElement("img");
 			thumbnail.src = thumbnail_url;
-			thumbnail.className ="img-responsive centeredVertically";
-
-			var titlePara = document.createElement("p");
-			titlePara.id = "videoInfo";
-			titlePara.className += "videoInfoText centeredVertically";
-
-			var titleNode = document.createTextNode(title);
-			titlePara.appendChild(titleNode);
-
-			var buttonList = document.createElement("ul");
-			buttonList.className += "btnList centeredVertically";
-			buttonList.id = "btnList";
-
-			var addButton = document.createElement("li");
-			addButton.className += "videoAddButton";
-			addButton.innerHTML += "<span class='videoItemButton fa fa-plus'></span>";
-
-			var minusButton = document.createElement("li");
-			minusButton.innerHTML += "<span class='videoItemButton fa fa-minus'></span>";
-
-			addButton.addEventListener("click", function(){
-				if(this.style.backgroundColor != "#AEEE00")
-				{
-					markVideoAsAdded(id);
-					addVideoToMyPlaylist(title, id);
-					this.style.backgroundColor = "#AEEE00";
-					this.nextSibling.style.backgroundColor = "#AEEE00";
-					this.parentNode.parentNode.style.backgroundColor = "#AEEE00";
-				}
-			});
-
-			minusButton.addEventListener("click", function(){
-				$(item).animate({height:"0"}, 300, function(){$(item).remove();});
-				removeVideoFromMyPlaylist(id);
-				removeVideoFromThisPlaylist(id);
-			});
-
-			buttonList.appendChild(addButton);
-			buttonList.appendChild(minusButton);
-
-			imgContainer.appendChild(thumbnail);
-			listItem.appendChild(imgContainer);
-			listItem.appendChild(titlePara);
-			listItem.appendChild(buttonList);
+			thumbnail.className ="img-responsive";
 			
-			col.appendChild(listItem);
-
-
-			$("#playlistVideos").append(col);
-
-		}
-		
-		function addVideoToMyPlaylist(title, id)
-		{
-			var videoObj = {metaData: title, vidid:id};
-			myPlaylist.push(videoObj);
-			sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
-		}
-
-
-		function removeVideoFromMyPlaylist(id) //stored playlist for power hour
-		{
-			for(var i = 0; i<myPlaylist.length; i++)
-			{
-				if(myPlaylist[i].vidid == id)
-				{
-					myPlaylist.splice(i, 1);
-					break;
-				}
-			}
-			sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
-			displayPlaylistCount(thisPlaylist.length);
-		}
-
-		function removeVideoFromThisPlaylist(id) //currently displayed playlist
-		{
-			for(var i = 0; i<thisPlaylist.length; i++)
-			{
-				if(thisPlaylist[i].vidid == id)
-				{
-					thisPlaylist.splice(i, 1);
-					break;
-				}
-			}
-			displayPlaylistCount(thisPlaylist.length);
-		}
-
-		function markVideoAsAdded(id)
-		{
-			for(var i = 0; i<thisPlaylist.length; i++)
-			{
-				if(thisPlaylist[i].vidid == id)
-				{
-					thisPlaylist[i].added = true;
-					break;
-				}
-			}
-		}
-
-		function shuffle(array) {
-			var currentIndex = array.length, temporaryValue, randomIndex ;
-
-			// While there remain elements to shuffle...
-			while (0 !== currentIndex) {
-
-				// Pick a remaining element...
-				randomIndex = Math.floor(Math.random() * currentIndex);
-				currentIndex -= 1;
-
-				// And swap it with the current element.
-				temporaryValue = array[currentIndex];
-				array[currentIndex] = array[randomIndex];
-				array[randomIndex] = temporaryValue;
-			}
-
-			return array;
+			thumbnail_container.appendChild(thumbnail);
+			
+			var caption = document.createElement("p");
+			caption.className = "wrap-caption";
+			caption.appendChild(document.createTextNode(title));
+			
+			video_container.appendChild(thumbnail_container);
+			video_container.appendChild(caption);
+			
+			grid_item.appendChild(video_container);
+						
+			$("#playlistVideos").append(grid_item);
 		}
 
 		function displayPage(pNum)
@@ -489,20 +345,37 @@
 			{
 				for(var i = start; i<stop; i++)
 				{
-					displayResult(thisPlaylist[i].metaData, thisPlaylist[i].vidid);
+					displayResult(thisPlaylist[i].title, thisPlaylist[i].video_id);
 				}
 			}
 			else if(thisPlaylist.length > start && thisPlaylist.length < stop)
 			{
 				for(var i = start; i<thisPlaylist.length; i++)
 				{
-					displayResult(thisPlaylist[i].metaData, thisPlaylist[i].vidid);
+					displayResult(thisPlaylist[i].title, thisPlaylist[i].video_id);
 				}
 			}
 
 		}
+		
+		var playlistTitle;
 
 		function requestPlaylistFromYoutube(playlistId, pageToken) {
+			// First time, load playlist title
+			if(!pageToken) {
+				var requestOptions = {
+					id: playlistId,
+					part: 'snippet',
+					//fields: 'items/snippet/channelTitle,items/snippet/title,items/snippet/resourceId/videoId,nextPageToken',
+				};
+				var request = gapi.client.youtube.playlists.list(requestOptions);
+				request.execute(function(response) {
+					//console.log(response);
+					playlistTitle = response.items[0].snippet.title;
+					displayPlaylistTitle(response.items[0].snippet.title);
+				});
+			}
+		
 			// Only get the videoIds and the nextpage token
 			var requestOptions = {
 				playlistId: playlistId,
@@ -518,69 +391,35 @@
 			
 			// Formulate and execute the api request
 			var request = gapi.client.youtube.playlistItems.list(requestOptions);
-			request.execute(function(response) {
-				var ids = [];
-				var titles = [];
-				
+			request.execute(function(response) {							
 				for(var i=0; i<response.items.length; ++i) {
 					if(response.items[i].snippet.title && response.items[i].snippet.title != 'Private video') {
 						var id = response.items[i].snippet.resourceId.videoId;
 						var title = response.items[i].snippet.title;
-						thisPlaylist.push({vidid:id, metaData:title, added:false});
-						ids.push(id);
-						titles.push(title);
+						thisPlaylist.push({video_id:id, title:title});
 					}	
-				}
-				
-				// Append the videoIds to the complete videoIds array
-				videoIds = videoIds.concat(ids);
-				
-				// Start getting metadata of the retrieved videoIds
-				storeMetadata(ids, titles, playlistId);
+				}				
 				
 				nextPageToken = response.result.nextPageToken;
-				// If there is another page of results, retrieve it
-				if(nextPageToken) {
+				
+				// If there is another page of results, retrieve it, else store playlist in database
+				if(nextPageToken && thisPlaylist.length < 100) {
 					requestPlaylistFromYoutube(playlistId, nextPageToken);
-				}
-				// If all videoIds have been retrieved, then store them in session storage
-				else {
-
+				} else {
+					console.log(thisPlaylist);
 					displayPlaylistCount(thisPlaylist.length);
 					displayPage(pageNum);
-					requestOptions = {
-						id: playlistId,
-						part: 'snippet',
-						//fields: 'items/snippet/channelTitle,items/snippet/title,items/snippet/resourceId/videoId,nextPageToken',
-					};
-					request = gapi.client.youtube.playlists.list(requestOptions);
-					request.execute(function(response) {
-						//console.log(response);
-						displayPlaylistTitle(response.items[0].snippet.title);
-						displayPlaylistCount(videoIds.length);
-						var q = Math.floor(videoIds.length/4);
-						storePlaylist(playlistId, response.items[0].snippet.title, videoIds[0], videoIds[q], videoIds[2*q], videoIds[3*q], videoIds.length); 
-						//playlistLoaded();
-					});				
+					storePlaylist(thisPlaylist, playlistId, playlistTitle);
 				}
-			});
-		}
-
-		function storePlaylist(plistId, t, v1, v2, v3, v4, len) {
-			$.ajax({
-				type: 'POST',
-				url: './php/storeplaylist.php',
-				data: {playlistid: plistId, title: t, vid1: v1, vid2: v2, vid3: v3, vid4: v4, length: len},
-				success: function(data) { console.log(data); },
 			});
 		}
 
 		// pass the videoIds and the playlistId to the "storemetadata.php" script
-		function storeMetadata(ids, titles, plistId) {
+		function storePlaylist(videos, plistId, plistTitle) {
 			$.ajax({
 				type: 'POST',
-				url: './php/storemetadata.php',
-				data: {ids: ids, playlistid: plistId, metadata: titles},
+				url: './php/storeplaylist.php',
+				data: {videos: videos, playlistid: plistId, title: plistTitle},
 				success: function(data) { console.log(data); },
 			});
 		}
@@ -595,6 +434,8 @@
 			}
 			return(false);
 		}
+		
+		
 
 		function makeNotEnoughVideosToast(numVids){
 

@@ -50,7 +50,7 @@
             <a href="./#page-top"></a>
           </li>
           <li>
-            <a class="page-scroll" href="./#mostpopular">Most Popular</a>
+            <a class="page-scroll" href="./#mostpopular">Popular</a>
           </li>
           <li>
             <a class="page-scroll" href="./#about">About</a>
@@ -59,7 +59,10 @@
             <a class="page-scroll" href="./#contact">Contact</a>
           </li>
           <li>
-            <a class="page-scroll" href="./myplaylist.html">My List</a>
+            <div id="noti_Container">
+							<a class="page-scroll" href="./mylist.html">My List</a>
+							<div class="noti_bubble" style="display:none"></div>
+						</div>
           </li>
         </ul>
       </div>
@@ -79,6 +82,12 @@
 			</div>
 		</form>
 		<div class="row" id="search-results">
+		
+		</div>
+		<div>
+			<button id="prev" class="btn">Prev</button>
+			<button id="next" class="btn">Next</button>
+		</div>
 	</div>
 
 	</section>
@@ -108,6 +117,14 @@
 
 <script type = "text/javascript">
 
+		$(document).ready(function(){
+			if(sessionStorage.getItem('myListMap_size') > 0) {
+				$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+				$(".noti_bubble").show();
+				console.log(sessionStorage.getItem('myListMap_size'));
+			}
+		});
+
     var totalVideoCount = 0;
     var videoIds = [];
     var playlistId;
@@ -116,9 +133,22 @@
     if(!query) {
       window.location.replace("index.php");
     }
-		//$(document).ready(function(){
-			//$(".searchBar").val(query);
-		//});
+		
+		var nextPageToken;
+		var prevPageToken;
+		$(document).ready(function() {
+			$("#next").click(function() {
+				$("#search-results").empty();
+				thumbnails=[];
+				search(nextPageToken);
+			}); 
+			
+			$("#prev").click(function() {
+				$("#search-results").empty();
+				thumbnails=[];
+				search(prevPageToken);
+			});
+		});
 
     function onClientLoad() {
       gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
@@ -129,25 +159,69 @@
       search();
     }
 
-    function search() {
+    function search(pagetoken) {
       var request = gapi.client.youtube.search.list({
         part: 'snippet',
         q:query,
-        maxResults:10,
+        maxResults:12,
+				pageToken:pagetoken,
         type:"playlist",
-    				//author: "Most Popular",
-    				order:"viewCount",
+ 				order:"viewCount"
     	});
       request.execute(onSearchResponse);
     }
 
     function onSearchResponse(response) 
     {
+			
+			
+			nextPageToken = response.nextPageToken;
+			$("#next").prop("disabled", nextPageToken == null);
+				
+			prevPageToken = response.prevPageToken;
+			$("#prev").prop("disabled", prevPageToken == null);
+			
+			console.log(nextPageToken);
+			console.log(prevPageToken);
+			
       for(var i=0; i<response.items.length; ++i)
       {
         var playlistTitle = response.items[i].snippet.title;
         var playlistId = response.items[i].id.playlistId;
         var thumbnail_url = response.items[i].snippet.thumbnails.medium.url;
+				
+				var col = document.createElement("div");
+				col.className = "col-md-4 videoGridItem";
+				
+				var plistDiv = document.createElement("div");
+				plistDiv.className = "videoInfo";
+				col.appendChild(plistDiv);
+				
+				var link = document.createElement("a");
+				link.href = "./playlist.html?plist=" + playlistId;
+				plistDiv.appendChild(link);
+				
+				var thumbnailContainer = document.createElement("div");
+				thumbnailContainer.className= "thumbnailContainer";
+				link.appendChild(thumbnailContainer);
+				
+				var thumbnail = document.createElement("img");
+				thumbnail.src = thumbnail_url;
+				thumbnail.className ="img-responsive videoInfoImg centeredVertically";
+				thumbnailContainer.appendChild(thumbnail);
+				
+				var caption = document.createElement("div");
+				caption.className = "caption";
+				link.appendChild(caption)
+				
+				var titlePara = document.createElement("p");
+				titlePara.className = "videoInfoText centeredVertically";
+				caption.appendChild(titlePara);
+				
+				var titleNode = document.createTextNode(playlistTitle);
+				titlePara.appendChild(titleNode);
+				
+				thumbnails.push(col);
 
         var thumb = "<div class='col-sm-6 portfolio-item'>";
         thumb += "<a href=./playlist.html?plist=" + playlistId + " class='portfolio-link' data-toggle='modal'>";
@@ -157,7 +231,7 @@
         thumb += "<img src='" + thumbnail_url + "'>";
         thumb += "</a>";
         thumb += "</div>";
-        thumbnails.push(thumb);
+        //thumbnails.push(thumb);
       }
 
       $(document).ready(function(){

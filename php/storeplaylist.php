@@ -1,67 +1,44 @@
 <?php
 	/******************************************************************************************
-	//	"storemetadata.php"
-	//	This page gets an array of videoIds and a playlistId through post. The page then scrapes
-	//	the youtube pages corresponding to each id in order to find the metadata. The page then
-	//	inserts	the values into the database.
-	//
-	//	TODO
-	//	-See "index.php" comments as this will have to be changed in order to complete the TODO
-	//	tasks outlined there
+	//	"storeplaylist.php"
+	//	Stores videos and titles in database. Stores link between video and playlist.
 	*******************************************************************************************/
-
-	// Connects to the database and returns a connection object 
-	function sql_connect() {
-		$servername = "localhost";
-		$username = "root";
-		$password = null;//"UNhRVujrXDXywhxH";
-		$database = "powerhour";
-
-		// Create connection
-		$conn = new mysqli($servername, $username, $password, $database);
-
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
-		}
-		//mysqli_select_db($conn,"powerhour");
-		return $conn;
-	}
+	
+	require('dbwrapper.php');
+	
+	$db = new Db();
 	
 	// Make sure that the videoIds and playlistId were sent
-	if($_POST['playlistid'] && $_POST['title'] && $_POST['vid1'] && $_POST['vid2'] && $_POST['vid3'] && $_POST['vid4']  && $_POST['length']) {	
-		// Connect to the database
-		$conn = sql_connect();
-	
-		// Store the videoIds and playlistId
-		$playlistid = $_POST['playlistid'];
-		$title = $_POST['title'];
-		$v1 = $_POST['vid1'];
-		$v2 = $_POST['vid2'];
-		$v3 = $_POST['vid3'];
-		$v4 = $_POST['vid4'];
-		$len = $_POST['length'];
-		$p = 'no';
-			
-			
-		// Sanitize the variables
-		$playlistid = $conn->real_escape_string($playlistid);
-		$title = $conn->real_escape_string($title);
-		$v1 = $conn->real_escape_string($v1);
-		$v2 = $conn->real_escape_string($v2);
-		$v3 = $conn->real_escape_string($v3);
-		$v4 = $conn->real_escape_string($v4);
-		$len = $conn->real_escape_string($len);
-						
+	if($_POST['videos'] && $_POST['playlistid'] && $_POST['title']) {		
+
+		$playlistid = $db -> quote($_POST['playlistid']);
+		$title = $db -> quote($_POST['title']);
+		$videos = $_POST['videos'];
+		$len = count($videos);
+		
+		$v1 = $db -> quote($videos[0]['video_id']);
+		$v2 = $db -> quote($videos[$len/4]['video_id']);
+		$v3 = $db -> quote($videos[$len/2]['video_id']);
+		$v4 = $db -> quote($videos[$len*3/4]['video_id']);
+		
 		// Insert the metadata into the database as well as create a link between the playlistId and videoId
-		$sql = "INSERT IGNORE INTO `playlists` (`playlistId`, `playlistTitle`, `vid1`, `vid2`, `vid3`, `vid4`, `mostPopular`, `num_videos`) VALUES ('$playlistid', '$title', '$v1', '$v2', '$v3', '$v4', '$p', '$len')";
-			
+		$sql = "INSERT IGNORE INTO playlists (playlistId, playlistTitle, vid1, vid2, vid3, vid4, num_videos) VALUES ($playlistid, $title, $v1, $v2, $v3, $v4, $len)";
 		// Execute the sql query
-		if ($conn->query($sql) === FALSE) {
-			echo "/nError: " . $sql . "<br>" . $conn->error;
+		if ($db -> query($sql) === FALSE) {
+			echo "/nError: " . $sql . "<br>" . $db -> error();
 		}
 		
-		// Close the database connection
-		$conn->close();
+		// Iterate through all the videoIds
+		foreach($videos as $video) {
+			$id = $db -> quote($video['video_id']);
+			$title = $db -> quote($video['title']);
+
+			$sql = array();
+			// Insert the metadata into the database as well as create a link between the playlistId and videoId
+			$sql[] = "INSERT IGNORE INTO `videos` (`video_id`, `title`) VALUES ($id, $title)";
+			$sql[] = "INSERT IGNORE INTO `playlists_videos_map` (`playlist_id`, `video_id`) VALUES ($playlistid, $id)";
+			
+			$results = $db -> transaction($sql);
+		}
 	}
 ?>

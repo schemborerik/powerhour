@@ -63,7 +63,10 @@
 						<a class="page-scroll" href="./#contact">Contact</a>
 					</li>
 					<li>
-						<a class="page-scroll" href="./myplaylist.html">My List</a>
+						<div id="noti_Container">
+							<a class="page-scroll" href="./mylist.html">My List</a>
+							<div class="noti_bubble" style="display:none"></div>
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -101,13 +104,6 @@
 			</button>
 			<button id="centuryclub" class="btn btn-default" style="display: none;">CENTURY CLUB</button>
 			<h2 class = "section-heading" id="counter"></h2>
-		
-			<div class="container">
-				<div class = 'wrap' height="120px">
-					<ul id = "upnext">
-					</ul>
-				</div>
-			</div>
 		</div>
 	</section>
 </body>
@@ -132,74 +128,35 @@
 <script src="js/agency.js"></script>
 
 <script type="text/javascript">
-		// Once the document is fully loaded, load the iframe API asynchronously
-		//var metaMap = new Map();
-		//var thumbList;
-		var thumbCount = 0;
-		var myPlaylist;
-		var videoIds = [];
+		$(document).ready(function(){
+			if(sessionStorage.getItem('myListMap_size') > 0) {
+				$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+				$(".noti_bubble").show();
+				console.log(sessionStorage.getItem('myListMap_size'));
+			}
+		});
+
+		var myListMap;
+		var myListMap_order;
 
 		$(document).ready(function(){
+			// Once the document is fully loaded, load the iframe API asynchronously
 			var tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			// videoIds = JSON.parse(sessionStorage.getItem('videoIds'));
-			myPlaylist = JSON.parse(sessionStorage.getItem("myPlaylist"));
-			// for(var k = 0; k<videoIds.length; k++){
-			// 	getMetaData(videoIds[k]);
-			// }
-			for(var k = 0; k<myPlaylist.length; k++)
-			{
-				displayThumbs(myPlaylist[k].vidid, myPlaylist[k].metaData);
-				videoIds.push(myPlaylist[k].vidid);
-			}
-
-			$( "#progressBarPlayTime" ).progressbar(
-				{
-					value: 90
-				});
+			
+			myListMap = JSON.parse(sessionStorage.getItem("myListMap"));
+			myListMap_order = JSON.parse(sessionStorage.getItem("myListMap_order"));
+			console.log(myListMap);
+			console.log(myListMap_order);
 		});
-		
-		// Get the videoIds from the session variable
-		//var videoIds;
-		
+				
 		// Variable to hold the playerHandler instance
 		var pHandler;
 		
 		var default_width = 854;
 		var default_height = 512;
-
-		function displayThumbs(vid, data)
-		{
-			//var data = metaMap.get(vid);
-			var thumbnail_url = "http://img.youtube.com/vi/" + vid + "/default.jpg";
-			var thumb = "<li video_id=" +vid + "><div id = 'thumb' style='background: url("+thumbnail_url+");'><div class = 'transbox'>";
-			thumb += "<marquee behavior='scroll' direction='left' vspace='30px' id='songInfo'>"+data+"</marquee>"
-			thumb += "</div></div></li>";
-			
-			$("#upnext").append(thumb);
-		}
-
-		function getMetaData(vId){
-			$.ajax({
-			type: 'GET',
-			url: './php/getmetadata.php',
-			data: { id: vId},
-			success: function(data) {
-				//console.log(data);
-				thumbCount++;
-				//metaMap.set(vId, data);
-				displayThumbs(vId, data); 
-				},
-			error: function()
-			{
-				alert("error");
-				console.log("Error retrieving " + vId);
-			}
-			});
-
-		}
 
 		function advanceUpnextSelection(vidIndex)
 		{
@@ -220,12 +177,6 @@
 		// Called after youtube iframe api is loaded and creates the youtube players
 		function onYouTubeIframeAPIReady() {
 			// Initialize the youtube iframe players
-			// for(var k = 0; k<videoIds.length; k++){
-			// 	var thumbnail_url = "http://img.youtube.com/vi/" + videoIds[k] + "/default.jpg";
-			// 	var thumb = "<p><img src = " + thumbnail_url + "></p>";
-			// 	$("#upnext").append(thumb);
-			// }
-
 			var player1 = new YT.Player('player1', {
 				height: default_height + "px",
 				width: default_width + "px",
@@ -260,6 +211,7 @@
 					'disablekb': 1
 				}          
 			});
+			console.log("youtube api ready");
 			
 			// Hide both players to begin
 			$(player1.getIframe()).hide();
@@ -269,7 +221,7 @@
 			//$(player2.getIframe()).addClass("embed-responsive-item");
 			
 			// Create a new playerHandler from the players and the videoIds
-			pHandler = new playerHandler(player1, player2, videoIds);
+			pHandler = new playerHandler(player1, player2, myListMap_order);
 		}
 
 		// Variable used to determine when both players are ready as this function will be called once for each player
@@ -277,6 +229,7 @@
 		
 		// Called after a youtube player is loaded and ready
 		function onPlayerReady(event) {      
+			console.log("player ready");
 			// Initialize players volume to 0
 			event.target.setVolume(0);
 			
@@ -328,13 +281,10 @@
 		</script>
 		<script type="text/javascript">
 		// Handles the loading and switching of videos
-		function playerHandler(player1, player2, videoIds) {
+		function playerHandler(player1, player2) {
 			// Keep track of which player is active and which is in the background 
 			this.activePlayer = player2;
 			this.backgroundPlayer = player1;
-			
-			// Store the videoIds internally
-			this.videoIds = videoIds;
 			
 			// Will contain the indices of loaded videos
 			this.playQueue = [];
@@ -386,25 +336,14 @@
 			// Starts a video on the backgroundPlayer so that it will begin loading and get the metadata of the video from the database
 			this.load = function () {        
 				// Load the video which will trigger play event after done loading
-				//this.backgroundPlayer.loadVideoById(videoIds[this.loadIndex], 60, "highres");
-				this.backgroundPlayer.loadVideoById(myPlaylist[this.loadIndex].vidid, 60, "highres");
+				this.backgroundPlayer.loadVideoById(myListMap_order[this.loadIndex], 60, "highres");
 				// Set the video's quality
 				this.backgroundPlayer.setPlaybackQuality("hd720");  
 				
 				// Add the loadIndex to the playQueue
 				this.playQueue.push(this.loadIndex);
 				
-				// Load metadata through ajax call to the database
-				// $.ajax({
-				// 	type: 'GET',
-				// 	url: './php/getmetadata.php',
-				// 	data: { id: videoIds[this.loadIndex]},
-				// 	success: function(data) { 
-				// 		//console.log(data);
-				// 		this.metadata = data;
-				// 	}.bind(this),
-				// });
-				this.metadata = myPlaylist[this.loadIndex].metaData;
+				this.metadata = myListMap[myListMap_order[this.loadIndex]];
 
 				// Indicate the index of the next video to load
 				this.loadIndex++
@@ -431,10 +370,7 @@
 					
 					var vidCount = 61 - this.playCounter;
 					$("#counter").text("Video: " + vidCount);
-					var vidIndex = vidCount-1;
-					//console.log("video index: " + vidIndex);
 
-					advanceUpnextSelection(vidIndex);
 
 					this.playCounter--;
 					
@@ -448,7 +384,7 @@
 					window.setTimeout(function() {$("#metadata").fadeOut(1500) }, 8000);
 					
 					// If more videos to load, load it
-					if(this.loadIndex < this.videoIds.length)
+					if(this.loadIndex < myListMap_order.length)
 						this.load();
 
 					// Begin the fade in of the new video
@@ -528,7 +464,7 @@
 			this.errorEvent = function (eventTarget) {
 				console.log("error");
 				if(this.backgroundPlayer == eventTarget) {
-					if(this.loadIndex < this.videoIds.length)
+					if(this.loadIndex < myListMap_order.length)
 						this.load();
 				}
 			}

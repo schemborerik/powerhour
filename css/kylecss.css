@@ -2,7 +2,7 @@
 {
   opacity: 1;
 }
-
+/*
 .videoGridItem
 {
 	margin-bottom:20px;
@@ -40,16 +40,24 @@
 }
   
 p.videoInfoText {  
-	/*display:inline-block;
-	width:70%;
-	max-width:70%;
-	margin-left:5px;
-	overflow:hidden;
-	vertical-align:middle;*/
 	padding:5%;
   width: 75%;
 	left: 20%;
-}  
+}  */
+
+p.wrap-caption {  
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	height: 3.5em;
+	line-height:1.75em;
+}
+
+.video-added {
+  background-color: #AEEE00;
+}
 
 .btnList
 {
@@ -99,4 +107,29 @@ ul.btnList li
   width: 100%;
 }
 
+#noti_Container {
+    position:relative;     /* This is crucial for the absolutely positioned element */
+		padding:15px;
+    /*width:16px;
+    height:16px;*/
+}
+.noti_bubble {
+    position:absolute;    /* This breaks the div from the normal HTML document. */
+    top: 0px;
+    right:0px;
+    //padding:2px 4px 2px 4px;
+		width: 25px;
+		height:25px;
+		line-height:25px;
+		text-align:center;
+    background-color:red; /* you could use a background image if you'd like as well */
+    color:white;
+    //font-weight:bold;
+    font-size:1em;
+
+    /* The following is CSS3, but isn't crucial for this technique to work. */
+    /* Keep in mind that if a browser doesn't support CSS3, it's fine! They just won't have rounded borders and won't have a box shadow effect. */
+    /* You can always use a background image to produce the same effect if you want to, and you can use both together so browsers without CSS3 still have the rounded/shadow look. */
+    border-radius:25px;
+}
 

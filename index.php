@@ -20,7 +20,7 @@
 -->
 
 <?php
-include("./php/setpopularyoutube.php");
+include("./php/getmostpopular.php");
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +79,11 @@ include("./php/setpopularyoutube.php");
             <a class="page-scroll" href="#contact">Contact</a>
           </li>
           <li>
-            <a class="page-scroll" href="./myplaylist.html">My List</a>
+            
+						<div id="noti_Container">
+							<a class="page-scroll" href="./mylist.html">My List</a>
+							<div class="noti_bubble" style="display:none"></div>
+						</div>
           </li>
         </ul>
       </div>
@@ -239,7 +243,7 @@ include("./php/setpopularyoutube.php");
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12 text-center">
-					<h2 class="section-heading">I'm Erik and I spend too much time on r/videos </h2>
+					<h2 class="section-heading">What is this thing? </h2>
 					<h3 class="section-subheading text-muted">This is an app used to create your own custom power hour playlist. You pick the songs, we'll handle the rest.</h3>
 					<h3 class="section-subheading text-muted">Every time the song changes, take a shot of beer. It's that simple.</h3>
           <h3 class="section-subheading text-muted">This application was made to fill 
@@ -371,6 +375,14 @@ include("./php/setpopularyoutube.php");
 	<script src="js/agency.js"></script>
 
 	<script type="text/javascript">
+	$(document).ready(function(){
+		if(sessionStorage.getItem('myListMap_size') > 0) {
+			$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+			$(".noti_bubble").show();
+			console.log(sessionStorage.getItem('myListMap_size'));
+		}
+	});
+	
 	function onClientLoad() {
 		gapi.client.setApiKey('AIzaSyCR5In4DZaTP6IEZQ0r1JceuvluJRzQNLE');
 		gapi.client.load('youtube', 'v3');

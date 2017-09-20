@@ -1,0 +1,404 @@
+<!-- This page is used to display the videos the user has added to their playlist. 
+Functionality:
+	-Show all the videos stored in sessionStorage.getItem("myPlaylist")
+	-be able to remove individual videos from playlist
+	-be able to remove all videos form playlist
+	-Undo/Redo buttons?
+	-button to start the power hour
+	-button to shuffle list
+	-drag and drog to rearange order?
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+	<script src="js/lodash.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
+
+	<!-- Plugin JavaScript -->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+	<script src="js/classie.js"></script>
+
+	<!-- Contact Form JavaScript -->
+	<script src="js/jqBootstrapValidation.js"></script>
+
+	<!-- Custom Theme JavaScript -->
+	<script src="js/agency.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Hour of Power</title>
+
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link href="css/agency.css" rel="stylesheet">
+	<link href="toastr/toastr-master/toastr.css" rel = "stylesheet"/>
+	<link href="css/kylecss.css" rel = "stylesheet"/>
+
+
+	<!-- Custom Fonts -->
+	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+	<script src = "toastr/toastr-master/toastr.js"></script>
+
+</head>
+
+<body id="page-top" class="index">
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-fixed-top navbar-shrink">
+		<div class="container">
+
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header page-scroll">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand page-scroll" href="./#page-top">Hour of Power</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="hidden">
+						<a href="./#page-top"></a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./#mostpopular">Popular</a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./#about">About</a>
+					</li>
+					<li>
+						<a class="page-scroll" href="./#contact">Contact</a>
+					</li>
+					<li class="active">
+						<div id="noti_Container">
+							<a class="page-scroll" href="./mylist.html">My List</a>
+							<div class="noti_bubble" style="display:none"></div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container-fluid -->
+	</nav>
+
+
+	<section>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h2 class="section-heading" id="title">My Power Hour</h2>
+					<h2 class="section-heading"><small id="numVideos"></small></h2>
+
+					<div id="buttonHeaderHolder">
+						<button id="removeAllVids" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-minus"></span> Remove All
+						</button>
+						<button id="shuffle" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-random"></span> Shuffle
+						</button>
+						<button id="play" class="headerButton btn btn-default">
+							<span class="glyphicon glyphicon-play"></span> Play
+						</button>
+					</div>
+					<h2 class="section-heading" id="novideos"></h2>
+				</div>
+			</div>
+			
+			<div id="playlistVideos" class="row ul-playlistVideos">
+
+			</div>
+		</div>
+	</section>
+
+
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+		if(sessionStorage.getItem('myListMap_size') > 0) {
+			$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+			$(".noti_bubble").show();
+			console.log(sessionStorage.getItem('myListMap_size'));
+		}
+	});
+
+var itemsPerPage = 20;
+var pageNum = 1;
+
+// Get our list from session storage, maps 
+var myListMap = {};
+var myListMap_size = 0;
+var myListMap_order = [];
+
+if(sessionStorage.getItem('myListMap')) {
+	console.log("retrieving myListMap");
+	myListMap = JSON.parse(sessionStorage.getItem('myListMap'));
+	console.log(myListMap);
+	myListMap_size = parseInt(sessionStorage.getItem("myListMap_size"));
+	console.log(myListMap_size + " items found");
+	
+	for (var property in myListMap) {
+    if (myListMap.hasOwnProperty(property)) {
+        myListMap_order.push( property );
+    }
+	}
+	sessionStorage.setItem("myListMap_order", JSON.stringify(myListMap_order));
+	console.log(myListMap_order);
+}
+
+
+$(document).ready(function(){
+	document.getElementById('numVideos').innerHTML = myListMap_size + " videos";
+
+	if(myListMap_size == 0){
+		document.getElementById('novideos').innerHTML = "Start Searching So We Can Start Drinking!";
+		document.getElementById("buttonHeaderHolder").style.display = "None";
+	}
+
+	$("#play").click(function() {
+		if(myListMap_size < 60){
+			callToast(myListMap_size);
+		} else{
+			var tmp = [];
+			// Remove deleted videos from myListMap_order
+			for(var i=0; i<myListMap_order.length; ++i) {
+				if(myListMap[myListMap_order[i]])
+					tmp.push(myListMap_order[i]);
+			}
+			myListMap_order = tmp;
+			sessionStorage.setItem("myListMap_order", JSON.stringify(myListMap_order));
+			window.location.assign("play.html");
+		}
+	});
+
+	$("#removeAllVids").click(function(){
+		myListMap = {};
+		myListMap_size = 0;
+		myListMap_order = [];
+		sessionStorage.setItem('myListMap', JSON.stringify(myListMap));
+		sessionStorage.setItem('myListMap_size', JSON.stringify(myListMap_size));
+		sessionStorage.setItem('myListMap_order', JSON.stringify(myListMap_order));
+		
+		$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+		$(".noti_bubble").show();
+		
+		document.getElementById('numVideos').innerHTML =  "0 videos";
+		document.getElementById("playlistVideos").innerHTML = "";
+
+		document.getElementById('play').disabled = true;
+	});
+
+	$("#shuffle").click(function(){
+		myListMap_order = shuffle(myListMap_order);
+		document.getElementById("playlistVideos").innerHTML = "";
+		for(var i = 1; i<pageNum+1; i++)
+		{
+			displayPage(i);
+		}
+		sessionStorage.setItem("myListMap_order", JSON.stringify(myListMap_order));
+	});
+
+	$(window).scroll(function() {
+	    if($(window).scrollTop() == $(document).height() - $(window).height()) 
+	    {
+	    	pageNum += 1;
+	    	displayPage(pageNum);      
+	    }
+	});
+
+	displayPage(pageNum);
+});
+
+// TODO
+function autoAdd()
+{
+	var numNeeded = 60 - myListMap_size;
+	for(var i = 0; i<numNeeded; i++)
+	{
+		myListMap['dQw4w9WgXcQ'] = "Rick Roll";
+		myListMap_size++;
+		myListMap_order.push('dQw4w9WgXcQ');
+	}
+	sessionStorage.setItem("myListMap", JSON.stringify(myListMap));
+	sessionStorage.setItem("myListMap_size", JSON.stringify(myListMap_size));
+	
+	$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+	$(".noti_bubble").show();
+					
+	sessionStorage.setItem("myListMap_order", JSON.stringify(myListMap_order));
+	window.location.assign("play.html");
+}
+
+function parseAutoResults(data, need){
+	var tmp = data.split("<br>");
+	tmp.pop();
+	need *= 2;
+	for(var i=0; i<need; i+=2) 
+	{
+		console.log(tmp[i+1]);
+		myPlaylist.push({video_id:tmp[1] , title: tmp[i+1]});
+	}
+	sessionStorage.setItem('myPlaylist', JSON.stringify(myPlaylist));
+}
+
+
+function callToast(numVids){
+
+	var autoButton = "<div><button class='btn btn-default' id='autoAdd' onclick='javascript:autoAdd()' style='padding-right: 10px'>Yes!</button>";
+	var customButton = "<button class='btn btn-default'>No! I'll do it</button></div>";
+	var msg = "You only have "+numVids+" videos in your list. Would you like us to finish your list?\t" + autoButton + customButton;
+
+	toastr.options = {
+		"closeButton": true,
+		"debug": false,
+		"newestOnTop": false,
+		"progressBar": false,
+		"positionClass": "toast-top-full-width",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": 0,
+		"extendedTimeOut": 0,
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut",
+		"tapToDismiss": true,
+	}
+
+	Command: toastr["info"](msg, "Hey! You need more videos!")
+}
+
+function displayResult(id, title)
+{
+	var thumbnail_url = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
+			
+	var grid_item = document.createElement("div");
+	grid_item.className = "col-sm-4";
+	
+	var video_container = document.createElement("div");
+	
+	video_container.addEventListener("click", function() {
+		
+		var item = this.parentNode;
+		
+		delete myListMap[id];
+		myListMap_size--;
+		// TODO delete from myListMap_order
+		$(item).animate({height:"0"}, 300, function(){$(item).remove();});
+		
+		document.getElementById('numVideos').innerHTML = myListMap_size + " videos";
+		
+		sessionStorage.setItem('myListMap', JSON.stringify(myListMap));
+		sessionStorage.setItem('myListMap_size', JSON.stringify(myListMap_size));
+		
+		$(".noti_bubble").text(sessionStorage.getItem('myListMap_size'));
+		$(".noti_bubble").show();
+	});
+	
+	var thumbnail_container = document.createElement("div");
+	
+	var thumbnail = document.createElement("img");
+	thumbnail.src = thumbnail_url;
+	thumbnail.className ="img-responsive";
+	
+	thumbnail_container.appendChild(thumbnail);
+	
+	var caption = document.createElement("p");
+	caption.className = "wrap-caption";
+	caption.appendChild(document.createTextNode(title));
+	
+	video_container.appendChild(thumbnail_container);
+	video_container.appendChild(caption);
+	
+	grid_item.appendChild(video_container);
+				
+	$("#playlistVideos").append(grid_item);
+}
+
+function displayPage(pNum)
+{
+	var start = itemsPerPage*(pNum - 1);
+	var stop = start+itemsPerPage;
+	console.log("pnum " + pNum);
+	console.log(start + ", " + stop);
+
+	if(myListMap_order.length >= stop)
+	{
+		console.log("if");
+		for(var i = start; i<stop; i++)
+		{
+			// If this video is not in myListMap -> we have deleted this entry already
+			if(myListMap[myListMap_order[i]])
+				displayResult(myListMap_order[i], myListMap[myListMap_order[i]]);
+		}
+	}
+	else if(myListMap_order.length > start && myListMap_order.length < stop)
+	{
+		console.log("else if");
+		for(var i = start; i<myListMap_order.length; i++)
+		{
+			// If this video is not in myListMap -> we have deleted this entry already
+			if(myListMap[myListMap_order[i]])			
+				displayResult(myListMap_order[i], myListMap[myListMap_order[i]]);
+		}
+	}
+
+}
+
+function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex ;
+
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+}
+
+</script>
+<script src="https://apis.google.com/js/client.js?onload=onClientLoad"></script>
+
+<div class = "container" id = "page-container" style="text-align:center;">
+	<ul class="pagination" id = "pages">
+	</ul>
+</div>
+</html>

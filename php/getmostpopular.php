@@ -1,40 +1,16 @@
 <?php
 	/******************************************************************************************
-	//	"server.php"
-	//	This page gets an array of videoIds and a playlistId through post. The page then scrapes
-	//	the youtube pages corresponding to each id in order to find the metadata. The page then
-	//	inserts	the values into the database.
+	//	"getmostpopular.php"
+	//	Gets the 6 most popular playlists from database
 	//
-	//	TODO
-	//	-See "index.php" comments as this will have to be changed in order to complete the TODO
-	//	tasks outlined there
 	*******************************************************************************************/
 
+	require('dbwrapper.php');
 	
-	// Connects to the database and returns a connection object 
-	function sql_connect() {
-		$servername = "localhost";
-		$username = "powerhour";
-		$password = null;//"UNhRVujrXDXywhxH";
-
-		// Create connection
-		$conn = new mysqli($servername, $username, $password);
-
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
-		}
-		mysqli_select_db($conn,"powerhour");
-		return $conn;
-	}
+	$db = new Db();
 	
-	// Connect to the database
-	$conn = sql_connect();
-							
-							
-	$sql = "SELECT * FROM playlists ORDER BY play_count DESC LIMIT 6";
-														 
-	$result = $conn->query($sql);
+	$rows = $db -> select("SELECT * FROM playlists ORDER BY play_count DESC LIMIT 6");
+	//echo $rows;
 	
 	$mostpopularids = [];
 	$titles = [];
@@ -42,18 +18,13 @@
 	$vid2 = [];
 	$vid3 = [];
 	$vid4 = [];
-							
-	if ($result->num_rows > 0) {
-			// output data of each row
-			while($row = $result->fetch_assoc()) {
-				 array_push($mostpopularids, $row["playlist_id"]);
-				 array_push($titles, $row["playlist_title"]);
-				 array_push($vid1, $row["sample_video_1"]);
-				 array_push($vid2, $row["sample_video_2"]);
-				 array_push($vid3, $row["sample_video_3"]);
-				 array_push($vid4, $row["sample_video_4"]);
-			}
-	}
 	
-	$conn->close();
+	foreach($rows as $row) {
+		$mostpopularids[] = $row["playlistId"];
+		$titles[] = $row["playlistTitle"];
+		$vid1[] = $row["vid1"];
+		$vid2[] = $row["vid2"];
+		$vid3[] = $row["vid3"];
+		$vid4[] = $row["vid4"];
+	}
 ?>
